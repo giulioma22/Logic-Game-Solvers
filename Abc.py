@@ -28,9 +28,16 @@ print(init_fill)
 #Create the playing grid
 grid = []
 for i in range(size+2):
+    line = []
     for j in range(size+2):
-        grid.append([])
+        if i != 0 and i != 5 and j != 0 and j != 5:
+            line.append(init_fill)
+        else:
+            line.append("---")
+    grid.append(line)
 
-# #Drawing the grid
-# for i in range(size):
-#     print(grid[i])
+grid[0][1] = "_A_"
+
+#Drawing the grid
+for i in range(size+2):
+    print(grid[i])
