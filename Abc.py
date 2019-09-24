@@ -26,11 +26,34 @@ def remove(letter, cell):
         cell[cell.index(letter)] = "_"
     return
 
-def only_letter(letter, cell):
+def keep_letter(letter, cell):
     for i in range(len(cell)):
         if cell[i] != letter:
             cell[i] = "_"
     return
+
+def only_letter(cell):
+    if cell.count("_") == 2:
+        for char in cell:
+            if char.isalpha(): 
+                return char 
+    else:
+        return False
+
+def check_line(letter, x, y):
+    appears_once = False
+    for i in range(size):
+        if letter in grid[x][i+1] or letter in grid[i+1][y]:
+            if appears_once == False:
+                appears_once = True
+            else:
+                appears_once = False
+                break    
+    if appears_once == True:
+        grid[x][y] = letter
+        return
+    else:
+        return False
 
 #Create the playing grid
 grid = []
@@ -50,12 +73,6 @@ for i in range(size+2):
     grid.append(line)
 
 #Add the side letters
-# for i in range(size):
-#     grid[0][i+1] = "_" + alph_order[hor_order[i]] + "_"
-#     grid[size+1][i+1] = "_" + alph_order[hor_order[-i-1]] + "_"
-#     grid[i+1][0] = "_" + alph_order[ver_order[i]] + "_"
-#     grid[i+1][size+1] = "_" + alph_order[ver_order[-i-1]] + "_"
-
 for i in range(size):
     grid[0][i+1] = "------" + alph_order[hor_order[i]] + "------"
     grid[size+1][i+1] = "------" + alph_order[hor_order[-i-1]] + "------"
@@ -68,18 +85,23 @@ for i in range(size+2):
     print(grid[i])
 
 #Solving function
-for i in range(size+2):
-    if i != 0 and i != size+1:
-        only_letter(alph_order[hor_order[i-1]], grid[1][i])
-        only_letter(alph_order[hor_order[-i]], grid[-2][i])
-        only_letter(alph_order[ver_order[i-1]], grid[i][1])
-        only_letter(alph_order[ver_order[-i]], grid[i][-2])
-        for j in range(letters-1):
-            remove(alph_order[hor_order[i-1]], grid[-j-2][i])
-            remove(alph_order[hor_order[-i]], grid[j+1][i])
-            remove(alph_order[ver_order[i-1]], grid[i][-j-2])
-            remove(alph_order[ver_order[-i]], grid[i][j+1])
+for i in range(size):
+    keep_letter(alph_order[hor_order[i]], grid[1][i+1])
+    keep_letter(alph_order[hor_order[-i-1]], grid[-2][i+1])
+    keep_letter(alph_order[ver_order[i]], grid[i+1][1])
+    keep_letter(alph_order[ver_order[-i-1]], grid[i+1][-2])
+    for j in range(letters-1):
+        remove(alph_order[hor_order[i]], grid[-j-2][i+1])
+        remove(alph_order[hor_order[-i-1]], grid[j+1][i+1])
+        remove(alph_order[ver_order[i]], grid[i+1][-j-2])
+        remove(alph_order[ver_order[-i-1]], grid[i+1][j+1])
 
+for i in range(size):
+    for j in range(size):
+        if only_letter(grid[i+1][j+1]) != False:
+            check_line(only_letter(grid[i+1][j+1]), i+1, j+1)
+
+abc = ["_", "_", "C"]
 
 #Drawing the FINAL grid
 print("\n" + "FINAL GRID")
