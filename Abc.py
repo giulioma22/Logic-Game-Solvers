@@ -41,15 +41,24 @@ def only_letter(cell):
         return False
 
 def check_line(letter, x, y):
-    appears_once = False
+    appears_once_horiz = False
+    appears_once_vert = False
     for i in range(size):
-        if letter in grid[x][i+1] or letter in grid[i+1][y]:
-            if appears_once == False:
-                appears_once = True
+        #Only in line?
+        if letter in grid[x][i+1]:
+            if appears_once_horiz == False:
+                appears_once_horiz = True
             else:
-                appears_once = False
-                break    
-    if appears_once == True:
+                appears_once_horiz = False
+                break
+        #Only in column?
+        if letter in grid[i+1][y]:
+            if appears_once_vert == False:
+                appears_once_vert = True
+            else:
+                appears_once_vert = False
+                break
+    if appears_once_horiz or appears_once_vert:
         grid[x][y] = letter
         return
     else:
@@ -96,12 +105,11 @@ for i in range(size):
         remove(alph_order[ver_order[i]], grid[i+1][-j-2])
         remove(alph_order[ver_order[-i-1]], grid[i+1][j+1])
 
+#Confirming letters per line
 for i in range(size):
     for j in range(size):
         if only_letter(grid[i+1][j+1]) != False:
             check_line(only_letter(grid[i+1][j+1]), i+1, j+1)
-
-abc = ["_", "_", "C"]
 
 #Drawing the FINAL grid
 print("\n" + "FINAL GRID")
