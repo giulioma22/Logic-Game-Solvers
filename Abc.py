@@ -1,13 +1,35 @@
 import math
 
-#Code for the logic game "Abc"
+#Data of playing grid
 
-size = 4
-letters = 3
+size = int(input("Enter grid size: "))
+letters = int(input("Enter number of different letters (e.g. 3 if A, B and C): "))
+hor_order = []
+hor_order_rev = []
+ver_order = []
+ver_order_rev = []
+
+print("Enter each top-border letter, left to right (0 = blank, 1 = A, 2 = B, ...): ")
+for i in range(size):    
+    hor_order.append(int(input()))
+print("Enter each bottom-border letter, left to right (0 = blank, 1 = A, 2 = B, ...): ")
+for i in range(size):    
+    hor_order_rev.append(int(input()))
+print("Enter each left-border letter, top to bottom (0 = blank, 1 = A, 2 = B, ...): ")
+for i in range(size):    
+    ver_order.append(int(input()))
+print("Enter each right-border letter, top to bottom (0 = blank, 1 = A, 2 = B, ...): ")
+for i in range(size):    
+    ver_order_rev.append(int(input()))
+
+for i in range(size):
+    hor_order.append(hor_order_rev[-i-1])
+    ver_order.append(ver_order_rev[-i-1])
+
 lower_limit = size - (letters - 1)
-alph_order = ["A", "B", "C", "D", "E", "-"]
-hor_order = [2, 1, 2, 0, 2, 0, 2, 1]
-ver_order = [2, 0, 0, 1, 2, 1, 1, 0]
+alph_order = ["_", "A", "B", "C", "D", "E", "F"]
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 #Remove letter from cell
 def remove(letter, cell):
@@ -105,10 +127,34 @@ def side_priority(grid_side):
 
 #Create the playing grid
 grid = []
+
 for i in range(size+2):
     line = []
     for j in range(size+2):
-        if i != 0 and i != 5 and j != 0 and j != 5:
+        if i != 0 and i != size+1 and j != 0 and j != size+1:
+            line.append("_")  
+        else:
+            line.append("/")
+    grid.append(line)
+
+#Add the side letters
+for i in range(size):
+    grid[0][i+1] = alph_order[hor_order[i]]
+    grid[size+1][i+1] = alph_order[hor_order[-i-1]]
+    grid[i+1][0] = alph_order[ver_order[i]]
+    grid[i+1][size+1] = alph_order[ver_order[-i-1]]
+
+#Drawing the STARTING grid
+print("\n" + "\x1b[1;33;44m" + " STARTING GRID "  + "\x1b[0m" + "\n")
+for i in range(size+2):
+    print(grid[i])
+
+grid = []
+
+for i in range(size+2):
+    line = []
+    for j in range(size+2):
+        if i != 0 and i != size+1 and j != 0 and j != size+1:
             if letters == 3:
                 line.append(["A", "B", "C"])
             if letters == 4:
@@ -126,8 +172,7 @@ for i in range(size):
     grid[i+1][0] = alph_order[ver_order[i]]
     grid[i+1][size+1] = alph_order[ver_order[-i-1]]
 
-#Drawing the STARTING grid
-# print("\n" + "\x1b[1;33;44m" + " STARTING GRID "  + "\x1b[0m" + "\n")
+# print("\n")
 # for i in range(size+2):
 #     print(grid[i])
 
@@ -143,9 +188,6 @@ for i in range(size):
         remove(alph_order[ver_order[i]], grid[i+1][-j-2])
         remove(alph_order[ver_order[-i-1]], grid[i+1][j+1])
 
-for i in range(size+2):
-    print(grid[i])
-
 #Dominating letters per line
 complete_grid = 0
 
@@ -157,32 +199,10 @@ while complete_grid != size**2:
                 grid[i+1][j+1] = "_"
                 continue
             for l in range(letters):
-                if alph_order[l] in grid[i+1][j+1]:
-                    check_singles(alph_order[l], i+1, j+1)
+                if alph_order[l+1] in grid[i+1][j+1]:
+                    check_singles(alph_order[l+1], i+1, j+1)
 
-    #clear_lines()
     complete_grid = clear_lines()
-
-# complete = False
-# while complete == False:
-#     complete = True
-#     for i in range(size):
-#         for j in range(size):
-#             if isinstance(grid[i+1][j+1], str) and grid[i+1][j+1] != "_":
-#                 check_singles(grid[i+1][j+1], i+1, j+1)
-#                 continue
-#             if grid[i+1][j+1].count("_") == 3:
-#                 grid[i+1][j+1] = "_"
-#             if only_letter(grid[i+1][j+1]) != False:
-#                 check_singles(only_letter(grid[i+1][j+1]), i+1, j+1)
-#                 #If letter confirmed, eliminates others in line
-#                 for k in range(size):
-#                     if isinstance(grid[k][j+1], list) and grid[i+1][j+1] in grid[k][j+1]:
-#                         remove(grid[i+1][j+1], grid[k][j+1])
-#                     if isinstance(grid[i+1][k], list) and grid[i+1][j+1] in grid[i+1][k]:
-#                         remove(grid[i+1][j+1], grid[i+1][k])
-#             # else:
-#             #     complete = False
 
 #Line elimination
 # side_priority("top")
