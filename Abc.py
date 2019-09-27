@@ -9,10 +9,6 @@ alph_order = ["A", "B", "C", "D", "E", "-"]
 hor_order = [2, 1, 2, 0, 2, 0, 2, 1]
 ver_order = [2, 0, 0, 1, 2, 1, 1, 0]
 
-empty_arr = []
-for i in range(letters):
-    empty_arr.append("_")
-
 #Remove letter from cell
 def remove(letter, cell):
     if letter in cell:
@@ -25,6 +21,20 @@ def keep_letter(letter, cell):
         if cell[i] != letter:
             cell[i] = "_"
     return
+
+def clear_lines():
+    complete_grid = 0
+    for i in range(size):
+        for j in range(size):
+            if isinstance(grid[i+1][j+1], str):
+                complete_grid += 1
+                if grid[i+1][j+1] != "_":
+                    for k in range(size):
+                        if isinstance(grid[k+1][j+1], list) and grid[i+1][j+1] in grid[k+1][j+1]:
+                            remove(grid[i+1][j+1], grid[k+1][j+1])
+                        if isinstance(grid[i+1][k+1], list) and grid[i+1][j+1] in grid[i+1][k+1]:
+                            remove(grid[i+1][j+1], grid[i+1][k+1])
+    return complete_grid
 
 #Checks if array has only 1 letter
 def only_letter(cell):
@@ -45,14 +55,14 @@ def check_singles(letter, x, y):
                 appears_once_horiz = True
             else:
                 appears_once_horiz = False
-                break
+                #break
         #Only one in column?
         if letter in grid[i+1][y]:
             if appears_once_vert == False:
                 appears_once_vert = True
             else:
                 appears_once_vert = False
-                break
+                #break
     if appears_once_horiz or appears_once_vert:
         grid[x][y] = letter
         return
@@ -137,12 +147,21 @@ for i in range(size+2):
     print(grid[i])
 
 #Dominating letters per line
+complete_grid = 0
 
-for i in range(size):
-    for j in range(size):
-        for l in range(letters):
-            if alph_order[l] in grid[i+1][j+1]:
-                check_singles(alph_order[l], i+1, j+1)
+while complete_grid != size**2:
+    complete_grid = 0
+    for i in range(size):
+        for j in range(size):
+            if grid[i+1][j+1].count("_") == 3:
+                grid[i+1][j+1] = "_"
+                continue
+            for l in range(letters):
+                if alph_order[l] in grid[i+1][j+1]:
+                    check_singles(alph_order[l], i+1, j+1)
+
+    #clear_lines()
+    complete_grid = clear_lines()
 
 # complete = False
 # while complete == False:
@@ -170,10 +189,6 @@ for i in range(size):
 # side_priority("bottom")
 # side_priority("left")
 # side_priority("right")
-
-# for i in range(size):
-#     for j in range(size):
-#         if isinstance(grid[i+1][j+1], list) and:
 
 #Drawing the FINAL grid
 print("\n" + "\x1b[1;33;44m" + " FINAL GRID "  + "\x1b[0m" + "\n")
