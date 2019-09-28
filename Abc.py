@@ -2,19 +2,19 @@ import math
 
 #Data of playing grid
 
-# size = 5
-# letters = 3
-# hor_order = [0, 0, 2, 2, 0]
-# hor_order_rev = [0, 1, 0, 3, 0]
-# ver_order = [0, 2, 2, 0, 0]
-# ver_order_rev = [0, 1, 0, 0, 0]
-
 size = 5
 letters = 3
-hor_order = [3, 1, 1, 2, 2]
-hor_order_rev = [2, 2, 2, 3, 1]
-ver_order = [3, 1, 2, 2, 2]
-ver_order_rev = [2, 3, 1, 1, 1]
+hor_order = [0, 0, 2, 2, 0]
+hor_order_rev = [0, 1, 0, 3, 0]
+ver_order = [0, 2, 2, 0, 0]
+ver_order_rev = [0, 1, 0, 0, 0]
+
+# size = 5
+# letters = 3
+# hor_order = [3, 1, 1, 2, 2]
+# hor_order_rev = [2, 2, 2, 3, 1]
+# ver_order = [3, 1, 2, 2, 2]
+# ver_order_rev = [2, 3, 1, 1, 1]
 
 # size = int(input("Enter grid size: "))
 # letters = int(input("Enter number of different letters (e.g. 3 if A, B and C): "))
@@ -167,6 +167,25 @@ def side_priority(grid_side):
 
     return
 
+#Check if matrix did (not) change after 1 loop
+def is_same_matrix(last_grid, grid):
+    same_matrix = True
+    for i in range(size):
+        for j in range(size):
+            if len(last_grid[i+1][j+1]) == len(grid[i+1][j+1]):
+                if isinstance(last_grid[i+1][j+1], list):
+                    for k in range(letters):
+                        if last_grid[i+1][j+1][k] != grid[i+1][j+1][k]:
+                            last_grid[i+1][j+1][k] = grid[i+1][j+1][k]
+                            same_matrix = False
+                else:
+                    if last_grid[i+1][j+1] != grid[i+1][j+1]:
+                        last_grid[i+1][j+1] = grid[i+1][j+1]
+                        same_matrix = False
+    if same_matrix == True:
+        print("\n" + "\x1b[1;33;41m" + " ERROR: infine loop " + "\x1b[0m")
+    return same_matrix
+
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -243,9 +262,11 @@ for i in range(size):
 #Dominating letters per line
 complete_grid = 0
 last_grid = []
+for i in range(size+2):
+    last_grid.append(["_", "_", "_", "_", "_", "_", "_"])
 same_grid = False
 
-while complete_grid != size**2:# and same_grid == False:
+while complete_grid != size**2 and same_grid == False:
     for i in range(size):
         for j in range(size):
             if grid[i+1][j+1].count("_") == letters:
@@ -256,22 +277,25 @@ while complete_grid != size**2:# and same_grid == False:
                     if alph_order[l+1] in grid[i+1][j+1]:
                         check_singles(alph_order[l+1], i+1, j+1)
 
+    #Clear lines
     complete_grid = clear_lines()
-    # if last_grid != grid:
-    #     last_grid = grid
-    # else:
-    #     same_grid = True
-    #     print("\n" + "\x1b[1;33;41m" + " ERROR: infine loop " + "\x1b[0m")
-
-    print("\n")
-    for t in range(size+2):
-        print(grid[t])
 
     #Side constraints check
     side_priority("top")
     side_priority("bottom")
     side_priority("left")
     side_priority("right")
+
+    #Check if algorithm is stuck
+    if is_same_matrix(last_grid, grid):
+        same_grid = True
+
+    # print("\n")
+    # for t in range(size+2):
+    #     print(grid[t])
+    # print("\n")
+    # for t in range(size+2):
+    #     print(last_grid[t])
 
 #Drawing the FINAL grid
 print("\n" + "\x1b[1;33;44m" + " FINAL GRID " + "\x1b[0m" + "\n")
