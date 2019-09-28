@@ -9,25 +9,32 @@ import math
 # ver_order = [0, 2, 2, 0, 0]
 # ver_order_rev = [0, 1, 0, 0, 0]
 
-size = int(input("Enter grid size: "))
-letters = int(input("Enter number of different letters (e.g. 3 if A, B and C): "))
-hor_order = []
-hor_order_rev = []
-ver_order = []
-ver_order_rev = []
+size = 5
+letters = 3
+hor_order = [3, 1, 1, 2, 2]
+hor_order_rev = [2, 2, 2, 3, 1]
+ver_order = [3, 1, 2, 2, 2]
+ver_order_rev = [2, 3, 1, 1, 1]
 
-print("Enter each top-border letter, left to right (0 = blank, 1 = A, 2 = B, ...): ")
-for i in range(size):    
-    hor_order.append(int(input()))
-print("Enter each bottom-border letter, left to right (0 = blank, 1 = A, 2 = B, ...): ")
-for i in range(size):    
-    hor_order_rev.append(int(input()))
-print("Enter each left-border letter, top to bottom (0 = blank, 1 = A, 2 = B, ...): ")
-for i in range(size):    
-    ver_order.append(int(input()))
-print("Enter each right-border letter, top to bottom (0 = blank, 1 = A, 2 = B, ...): ")
-for i in range(size):    
-    ver_order_rev.append(int(input()))
+# size = int(input("Enter grid size: "))
+# letters = int(input("Enter number of different letters (e.g. 3 if A, B and C): "))
+# hor_order = []
+# hor_order_rev = []
+# ver_order = []
+# ver_order_rev = []
+
+# print("Enter top-border letters, left to right one at a time (0 = blank, 1 = A, 2 = B, ...): ")
+# for i in range(size):    
+#     hor_order.append(int(input()))
+# print("Enter bottom-border letters, left to right: ")
+# for i in range(size):    
+#     hor_order_rev.append(int(input()))
+# print("Enter each left-border letter, top to bottom: ")
+# for i in range(size):    
+#     ver_order.append(int(input()))
+# print("Enter each right-border letter, top to bottom: ")
+# for i in range(size):    
+#     ver_order_rev.append(int(input()))
 
 for i in range(size):
     hor_order.append(hor_order_rev[-i-1])
@@ -125,7 +132,7 @@ def side_priority(grid_side):
                         switch_top = True
                         if side_letter == cell_value:
                             break
-                    if side_letter not in cell_value:
+                    if side_letter not in cell_value and switch_top == False:
                         grid[j+1][i+1] = "_"
             if grid_side == "bottom":
                 cell_value = grid[-j-1][i+1]
@@ -135,7 +142,7 @@ def side_priority(grid_side):
                         switch_bottom = True
                         if side_letter == cell_value:
                             break
-                    if side_letter not in cell_value:
+                    if side_letter not in cell_value and switch_bottom == False:
                         grid[-j-1][i+1] = "_"
             if grid_side == "left":
                 cell_value = grid[i+1][j+1]
@@ -155,7 +162,7 @@ def side_priority(grid_side):
                         switch_right = True
                         if side_letter == cell_value:
                             break
-                    if side_letter not in cell_value:
+                    if side_letter not in cell_value and switch_right == False:
                         grid[i+1][-j-1] = "_"
 
     return
@@ -261,10 +268,10 @@ while complete_grid != size**2:# and same_grid == False:
         print(grid[t])
 
     #Side constraints check
-    # side_priority("top")
-    # side_priority("bottom")
+    side_priority("top")
+    side_priority("bottom")
     side_priority("left")
-    # side_priority("right")
+    side_priority("right")
 
 #Drawing the FINAL grid
 print("\n" + "\x1b[1;33;44m" + " FINAL GRID " + "\x1b[0m" + "\n")
