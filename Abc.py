@@ -8,6 +8,7 @@ hor_order = [0, 0, 2, 2, 0]
 hor_order_rev = [0, 1, 0, 3, 0]
 ver_order = [0, 2, 2, 0, 0]
 ver_order_rev = [0, 1, 0, 0, 0]
+available_letters = []
 
 # size = 5
 # letters = 3
@@ -41,7 +42,7 @@ for i in range(size):
     ver_order.append(ver_order_rev[-i-1])
 
 lower_limit = size - (letters - 1)
-alph_order = ["_", "A", "B", "C", "D", "E", "F"]
+alph_order = ["_", "A", "B", "C", "D", "E"]
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -182,25 +183,33 @@ def is_same_matrix(last_grid, grid):
                     if last_grid[i+1][j+1] != grid[i+1][j+1]:
                         last_grid[i+1][j+1] = grid[i+1][j+1]
                         same_matrix = False
-    if same_matrix == True:
-        print("\n" + "\x1b[1;33;41m" + " ERROR: infine loop " + "\x1b[0m")
+            else:
+                same_matrix = False
+                if isinstance(grid[i+1][j+1], list):
+                    last_grid[i+1][j+1] = []
+                    for k in range(letters):
+                        last_grid[i+1][j+1].append(grid[i+1][j+1][k])
+                else:
+                    last_grid[i+1][j+1] = grid[i+1][j+1]
     return same_matrix
-
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 
 #Create the playing grid
 grid = []
+last_grid = []
 
 for i in range(size+2):
-    line = []
+    grid.append([])
+    last_grid.append([])
     for j in range(size+2):
         if i != 0 and i != size+1 and j != 0 and j != size+1:
-            line.append("_")  
+            grid[i].append("_")
+            last_grid[i].append("_")
         else:
-            line.append("/")
-    grid.append(line)
+            grid[i].append("/")
+            last_grid[i].append("/")
 
 #Add the side letters
 for i in range(size):
@@ -222,12 +231,13 @@ for i in range(size+2):
         if i != 0 and i != size+1 and j != 0 and j != size+1:
             if letters == 3:
                 line.append(["A", "B", "C"])
+                available_letters = ["A", "B", "C"]
             if letters == 4:
                 line.append(["A", "B", "C", "D"])
+                available_letters = ["A", "B", "C", "D"]
             if letters == 5:
                 line.append(["A", "B", "C", "D", "E"])
-            if letters == 6:
-                line.append(["A", "B", "C", "D", "E", "F"])      
+                available_letters = ["A", "B", "C", "D", "E"]
         else:
             line.append("/")
     grid.append(line)
@@ -244,58 +254,118 @@ for i in range(size):
 #     print(grid[i])
 
 #Solving function
-for i in range(size):
-    keep_letter(alph_order[hor_order[i]], grid[1][i+1])
-    keep_letter(alph_order[hor_order[-i-1]], grid[-2][i+1])
-    keep_letter(alph_order[ver_order[i]], grid[i+1][1])
-    keep_letter(alph_order[ver_order[-i-1]], grid[i+1][-2])
-    for j in range(letters-1):
-        remove(alph_order[hor_order[i]], grid[-j-2][i+1])
-        remove(alph_order[hor_order[-i-1]], grid[j+1][i+1])
-        remove(alph_order[ver_order[i]], grid[i+1][-j-2])
-        remove(alph_order[ver_order[-i-1]], grid[i+1][j+1])
-
-# print("\n")
-# for i in range(size+2):
-#     print(grid[i])
-
-#Dominating letters per line
-complete_grid = 0
-last_grid = []
-for i in range(size+2):
-    last_grid.append(["_", "_", "_", "_", "_", "_", "_"])
+exit_loop = False
 same_grid = False
+complete_grid = 0
 
-while complete_grid != size**2 and same_grid == False:
-    for i in range(size):
-        for j in range(size):
-            if grid[i+1][j+1].count("_") == letters:
-                grid[i+1][j+1] = "_"
-                continue
-            if isinstance(grid[i+1][j+1], list):
-                for l in range(letters):
-                    if alph_order[l+1] in grid[i+1][j+1]:
-                        check_singles(alph_order[l+1], i+1, j+1)
+while exit_loop == False:
+    same_grid = False
+    while same_grid == False: 
+        print("\nNEW 1st CYCLE\n")
+        for i in range(size):
+            for j in range(letters-1):
+                remove(alph_order[hor_order[i]], grid[-j-2][i+1])
+                remove(alph_order[hor_order[-i-1]], grid[j+1][i+1])
+                remove(alph_order[ver_order[i]], grid[i+1][-j-2])
+                remove(alph_order[ver_order[-i-1]], grid[i+1][j+1])
+            if hor_order[i] != 0:   #If there is no border letter, we skip
+                for j in range(size):
+                    # print("BANANA " + str(j+1) + " " + str(i+1) + " " + str(grid[j+1][i+1]))
+                    if alph_order[hor_order[i]] not in grid[j+1][i+1]:
+                        grid[j+1][i+1] = "_"
+                    else:
+                        keep_letter(alph_order[hor_order[i]], grid[j+1][i+1])
+                        break
+            if hor_order[-i-1] != 0:
+                for j in range(size):
+                    if alph_order[hor_order[-i-1]] not in grid[-j-1][i+1]:
+                        grid[-j-1][i+1] = "_"
+                    else:
+                        keep_letter(alph_order[hor_order[-i-1]], grid[-j-1][i+1])
+                        break
+            if ver_order[i] != 0:
+                for j in range(size):
+                    if alph_order[ver_order[i]] not in grid[i+1][j+1]:
+                        grid[i+1][j+1] = "_"
+                    else:
+                        keep_letter(alph_order[ver_order[i]], grid[i+1][j+1])
+                        break
+            if ver_order[-i-1] != 0:
+                for j in range(size):
+                    if alph_order[ver_order[-i-1]] not in grid[i+1][-j-1]:
+                        grid[i+1][-j-1] = "_"
+                    else:
+                        keep_letter(alph_order[ver_order[-i-1]], grid[i+1][-j-1])
+                        break
+        
+        for t in range(size+2):
+            print(grid[t])
+        print("\n")
+        for t in range(size+2):
+            print(last_grid[t])
 
-    #Clear lines
-    complete_grid = clear_lines()
+        #Check if algorithm is stuck
+        if is_same_matrix(last_grid, grid):
+            print("\n1st CLOSED - - - - - - - - - - - - -")
+            same_grid = True
 
-    #Side constraints check
-    side_priority("top")
-    side_priority("bottom")
-    side_priority("left")
-    side_priority("right")
+    print("\n")
+    for i in range(size+2):
+        print(grid[i])
 
-    #Check if algorithm is stuck
-    if is_same_matrix(last_grid, grid):
-        same_grid = True
+    #Dominating letters per line
+    same_grid = False
+    cnt = 0
 
-    # print("\n")
-    # for t in range(size+2):
-    #     print(grid[t])
-    # print("\n")
-    # for t in range(size+2):
-    #     print(last_grid[t])
+    while complete_grid != size**2 and same_grid == False:
+    # if complete_grid != size**2 and same_grid == False:
+        print("\nNEW 2nd CYCLE\n")
+        for i in range(size):
+            for j in range(size):
+                if grid[i+1][j+1].count("_") == letters:
+                    grid[i+1][j+1] = "_"
+                    continue
+                if isinstance(grid[i+1][j+1], list):
+                    for l in range(letters):
+                        if alph_order[l+1] in grid[i+1][j+1]:
+                            check_singles(alph_order[l+1], i+1, j+1)
+
+        #Clear lines
+        complete_grid = clear_lines()
+
+        #Side constraints check
+        side_priority("top")
+        side_priority("bottom")
+        side_priority("left")
+        side_priority("right")
+
+        #Check if algorithm is stuck
+        if is_same_matrix(last_grid, grid):
+            print("2nd CLOSED - - - - - - - - - - - - -\n")
+            if cnt == 0:
+                same_grid = True
+                exit_loop = True
+            else:
+                same_grid = True
+                exit_loop = False
+
+        #Count the loops of 2nd WHILE
+        cnt += 1
+
+        for t in range(size+2):
+            print(grid[t])
+        # print("\n")
+        # for t in range(size+2):
+        #     print(last_grid[t])
+
+        # if same_grid:
+        #     grid[3][3] = "B"
+        #     same_grid = False
+
+# - - - - End of WHILE - - - - - 
+
+if same_grid == True:
+        print("\n" + "\x1b[1;33;41m" + " ERROR: infinite loop " + "\x1b[0m")
 
 #Drawing the FINAL grid
 print("\n" + "\x1b[1;33;44m" + " FINAL GRID " + "\x1b[0m" + "\n")
