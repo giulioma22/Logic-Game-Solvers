@@ -41,7 +41,7 @@ for i in range(size):
     ver_order.append(ver_order_rev[-i-1])
 
 lower_limit = size - (letters - 1)
-alph_order = ["_", "A", "B", "C", "D", "E"]
+alph_order = ["_", "A", "B", "C", "D", "E", "F"]
 available_letters = []
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -258,6 +258,9 @@ for i in range(size+2):
             if letters == 5:
                 line.append(["A", "B", "C", "D", "E"])
                 available_letters = ["A", "B", "C", "D", "E"]
+            if letters == 6:
+                line.append(["A", "B", "C", "D", "E", "F"])
+                available_letters = ["A", "B", "C", "D", "E", "F"]
         else:
             line.append("/")
     grid.append(line)
