@@ -2,13 +2,12 @@ import math
 
 #Data of playing grid
 
-size = 5
-letters = 3
-hor_order = [0, 0, 2, 2, 0]
-hor_order_rev = [0, 1, 0, 3, 0]
-ver_order = [0, 2, 2, 0, 0]
-ver_order_rev = [0, 1, 0, 0, 0]
-available_letters = []
+# size = 5
+# letters = 3
+# hor_order = [2, 1, 0, 3, 0]
+# hor_order_rev = [3, 2, 3, 1, 0]
+# ver_order = [1, 0, 3, 1, 3]
+# ver_order_rev = [0, 1, 2, 3, 2]
 
 # size = 5
 # letters = 3
@@ -17,25 +16,25 @@ available_letters = []
 # ver_order = [3, 1, 2, 2, 2]
 # ver_order_rev = [2, 3, 1, 1, 1]
 
-# size = int(input("Enter grid size: "))
-# letters = int(input("Enter number of different letters (e.g. 3 if A, B and C): "))
-# hor_order = []
-# hor_order_rev = []
-# ver_order = []
-# ver_order_rev = []
+size = int(input("Enter grid size: "))
+letters = int(input("Enter number of different letters (e.g. 3 if A, B and C): "))
+hor_order = []
+hor_order_rev = []
+ver_order = []
+ver_order_rev = []
 
-# print("Enter top-border letters, left to right one at a time (0 = blank, 1 = A, 2 = B, ...): ")
-# for i in range(size):    
-#     hor_order.append(int(input()))
-# print("Enter bottom-border letters, left to right: ")
-# for i in range(size):    
-#     hor_order_rev.append(int(input()))
-# print("Enter each left-border letter, top to bottom: ")
-# for i in range(size):    
-#     ver_order.append(int(input()))
-# print("Enter each right-border letter, top to bottom: ")
-# for i in range(size):    
-#     ver_order_rev.append(int(input()))
+print("Enter top-border letters, left to right one at a time (0 = blank, 1 = A, 2 = B, ...): ")
+for i in range(size):    
+    hor_order.append(int(input()))
+print("Enter bottom-border letters, left to right: ")
+for i in range(size):    
+    hor_order_rev.append(int(input()))
+print("Enter each left-border letter, top to bottom: ")
+for i in range(size):    
+    ver_order.append(int(input()))
+print("Enter each right-border letter, top to bottom: ")
+for i in range(size):    
+    ver_order_rev.append(int(input()))
 
 for i in range(size):
     hor_order.append(hor_order_rev[-i-1])
@@ -43,6 +42,7 @@ for i in range(size):
 
 lower_limit = size - (letters - 1)
 alph_order = ["_", "A", "B", "C", "D", "E"]
+available_letters = []
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -117,54 +117,73 @@ def check_singles(letter, x, y):
 #Check side letter conditions
 def side_priority(grid_side):
     for i in range(size):
-        switch_top = False
-        switch_bottom = False
-        switch_left = False
-        switch_right = False
+        switch_encount = 0
+        first_cell = []
         for j in range(lower_limit):
-            # if j == lower_limit:
-            #     cell_value = side_letter
-            #     break
             if grid_side == "top":
                 cell_value = grid[j+1][i+1]
                 if alph_order[hor_order[i]] != "_":
                     side_letter = alph_order[hor_order[i]]
                     if side_letter in cell_value:
-                        switch_top = True
+                        if switch_encount == 0:
+                            first_cell = [j+1, i+1]
+                        switch_encount += 1
                         if side_letter == cell_value:
                             break
-                    if side_letter not in cell_value and switch_top == False:
-                        grid[j+1][i+1] = "_"
+                    else:
+                        if switch_encount == 0:
+                            grid[j+1][i+1] = "_"
+                        if isinstance(cell_value, str) and cell_value != "_" and switch_encount == 1:
+                            grid[first_cell[0]][first_cell[1]] = side_letter
+                            break
             if grid_side == "bottom":
-                cell_value = grid[-j-1][i+1]
+                cell_value = grid[-j-2][i+1]
                 if alph_order[hor_order[-i-1]] != "_":
                     side_letter = alph_order[hor_order[-i-1]]
                     if side_letter in cell_value:
-                        switch_bottom = True
+                        if switch_encount == 0:
+                            first_cell = [-j-2, i+1]
+                        switch_encount += 1
                         if side_letter == cell_value:
                             break
-                    if side_letter not in cell_value and switch_bottom == False:
-                        grid[-j-1][i+1] = "_"
+                    else:
+                        if switch_encount == 0:
+                            grid[-j-2][i+1] = "_"
+                        if isinstance(cell_value, str) and cell_value != "_" and switch_encount == True:
+                            grid[first_cell[0]][first_cell[1]] = side_letter
+                            break
             if grid_side == "left":
                 cell_value = grid[i+1][j+1]
                 if alph_order[ver_order[i]] != "_":
                     side_letter = alph_order[ver_order[i]]
                     if side_letter in cell_value:
-                        switch_left = True
+                        if switch_encount == 0:    
+                            first_cell = [i+1, j+1]
+                        switch_encount += 1
                         if side_letter == cell_value:
                             break
-                    if side_letter not in cell_value and switch_left == False:
-                        grid[i+1][j+1] = "_"
+                    else:
+                        if switch_encount == 0:
+                            grid[i+1][j+1] = "_"
+                        if isinstance(cell_value, str) and cell_value != "_" and switch_encount == True:
+                            grid[first_cell[0]][first_cell[1]] = side_letter
+                            break
             if grid_side == "right":
-                cell_value = grid[i+1][-j-1]
+                cell_value = grid[i+1][-j-2]
                 if alph_order[ver_order[-i-1]] != "_":
                     side_letter = alph_order[ver_order[-i-1]]
                     if side_letter in cell_value:
-                        switch_right = True
+                        if switch_encount == 0:
+                            first_cell = [i+1, -j-2]
+                        switch_encount += 1
                         if side_letter == cell_value:
                             break
-                    if side_letter not in cell_value and switch_right == False:
-                        grid[i+1][-j-1] = "_"
+                    else:
+                        if switch_encount == 0:
+                            grid[i+1][-j-2] = "_"
+                        if isinstance(cell_value, str) and cell_value != "_" and switch_encount == True:
+                            grid[first_cell[0]][first_cell[1]] = side_letter
+                            break
 
     return
 
@@ -225,6 +244,7 @@ for i in range(size+2):
 
 grid = []
 
+#Fill cells with all-letters array
 for i in range(size+2):
     line = []
     for j in range(size+2):
@@ -258,10 +278,10 @@ exit_loop = False
 same_grid = False
 complete_grid = 0
 
-while exit_loop == False:
+while complete_grid != size**2 and exit_loop == False:
     same_grid = False
     while same_grid == False: 
-        print("\nNEW 1st CYCLE\n")
+        #print("\nNEW 1st CYCLE\n")
         for i in range(size):
             for j in range(letters-1):
                 remove(alph_order[hor_order[i]], grid[-j-2][i+1])
@@ -270,7 +290,6 @@ while exit_loop == False:
                 remove(alph_order[ver_order[-i-1]], grid[i+1][j+1])
             if hor_order[i] != 0:   #If there is no border letter, we skip
                 for j in range(size):
-                    # print("BANANA " + str(j+1) + " " + str(i+1) + " " + str(grid[j+1][i+1]))
                     if alph_order[hor_order[i]] not in grid[j+1][i+1]:
                         grid[j+1][i+1] = "_"
                     else:
@@ -298,28 +317,27 @@ while exit_loop == False:
                         keep_letter(alph_order[ver_order[-i-1]], grid[i+1][-j-2])
                         break
         
-        for t in range(size+2):
-            print(grid[t])
-        print("\n")
-        for t in range(size+2):
-            print(last_grid[t])
+        # for t in range(size+2):
+        #     print(grid[t])
+        # print("\n")
+        # for t in range(size+2):
+        #     print(last_grid[t])
 
         #Check if algorithm is stuck
         if is_same_matrix(last_grid, grid):
-            print("\n1st CLOSED - - - - - - - - - - - - -")
+            #print("\n1st CLOSED - - - - - - - - - - - - -")
             same_grid = True
 
-    print("\n")
-    for i in range(size+2):
-        print(grid[i])
+    # print("\n1st WHILE\n")
+    # for i in range(size+2):
+    #     print(grid[i])
 
     #Dominating letters per line
     same_grid = False
     cnt = 0
 
     while complete_grid != size**2 and same_grid == False:
-    # if complete_grid != size**2 and same_grid == False:
-        print("\nNEW 2nd CYCLE\n")
+        #print("\nNEW 2nd CYCLE\n")
         for i in range(size):
             for j in range(size):
                 if grid[i+1][j+1].count("_") == letters:
@@ -333,6 +351,10 @@ while exit_loop == False:
         #Clear lines
         complete_grid = clear_lines()
 
+        # print("\n2nd WHILE\n")
+        # for t in range(size+2):
+        #     print(grid[t])
+
         #Side constraints check
         side_priority("top")
         side_priority("bottom")
@@ -341,7 +363,7 @@ while exit_loop == False:
 
         #Check if algorithm is stuck
         if is_same_matrix(last_grid, grid):
-            print("2nd CLOSED - - - - - - - - - - - - -\n")
+            #print("2nd CLOSED - - - - - - - - - - - - -\n")
             if cnt == 0:
                 same_grid = True
                 exit_loop = True
@@ -352,19 +374,16 @@ while exit_loop == False:
         #Count the loops of 2nd WHILE
         cnt += 1
 
-        for t in range(size+2):
-            print(grid[t])
+        # print("\n2nd WHILE\n")
+        # for t in range(size+2):
+        #     print(grid[t])
         # print("\n")
         # for t in range(size+2):
         #     print(last_grid[t])
 
-        # if same_grid:
-        #     grid[3][3] = "B"
-        #     same_grid = False
-
 # - - - - End of WHILE - - - - - 
 
-if same_grid == True:
+if same_grid == True and complete_grid != size**2:
         print("\n" + "\x1b[1;33;41m" + " ERROR: infinite loop " + "\x1b[0m")
 
 #Drawing the FINAL grid
