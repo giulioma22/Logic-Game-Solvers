@@ -4,10 +4,10 @@ import math
 
 # size = 5
 # letters = 3
-# hor_order = [2, 1, 0, 3, 0]
-# hor_order_rev = [3, 2, 3, 1, 0]
-# ver_order = [1, 0, 3, 1, 3]
-# ver_order_rev = [0, 1, 2, 3, 2]
+# hor_order = [0, 2, 3, 2, 3]
+# hor_order_rev = [0, 0, 1, 3, 1]
+# ver_order = [0, 3, 3, 2, 2]
+# ver_order_rev = [0, 0, 2, 1, 1]
 
 # size = 5
 # letters = 3
@@ -277,17 +277,47 @@ for i in range(size):
 exit_loop = False
 same_grid = False
 complete_grid = 0
+offset = 1
 
 while complete_grid != size**2 and exit_loop == False:
     same_grid = False
     while same_grid == False: 
         #print("\nNEW 1st CYCLE\n")
         for i in range(size):
-            for j in range(letters-1):
-                remove(alph_order[hor_order[i]], grid[-j-2][i+1])
-                remove(alph_order[hor_order[-i-1]], grid[j+1][i+1])
-                remove(alph_order[ver_order[i]], grid[i+1][-j-2])
-                remove(alph_order[ver_order[-i-1]], grid[i+1][j+1])
+            top_max = letters - 1
+            bottom_max = letters - 1
+            left_max = letters - 1
+            right_max = letters - 1
+            for j in range(size):
+                if top_max > 0:
+                    if isinstance(grid[-j-2][i+1], list):
+                        remove(alph_order[hor_order[i]], grid[-j-2][i+1])
+                        top_max -= 1
+                    else:
+                        if grid[-j-2][i+1] != "_":
+                            top_max -= 1
+                if bottom_max > 0:
+                    if isinstance(grid[j+1][i+1], list):
+                        remove(alph_order[hor_order[-i-1]], grid[j+1][i+1])
+                        bottom_max -= 1
+                    else:
+                        if grid[j+1][i+1] != "_":
+                            bottom_max -= 1
+                if left_max > 0:
+                    if isinstance(grid[i+1][-j-2], list):
+                        remove(alph_order[ver_order[i]], grid[i+1][-j-2])
+                        left_max -= 1
+                    else:
+                        if grid[i+1][-j-2] != "_":
+                            left_max -= 1
+                if right_max > 0:
+                    if isinstance(grid[i+1][j+1], list):
+                        remove(alph_order[ver_order[-i-1]], grid[i+1][j+1])
+                        right_max -= 1
+                    else:
+                        if grid[i+1][j+1] != "_":
+                            right_max -= 1
+            
             if hor_order[i] != 0:   #If there is no border letter, we skip
                 for j in range(size):
                     if alph_order[hor_order[i]] not in grid[j+1][i+1]:
