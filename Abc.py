@@ -278,10 +278,10 @@ while exit_loop == False:
                         break
             if hor_order[-i-1] != 0:
                 for j in range(size):
-                    if alph_order[hor_order[-i-1]] not in grid[-j-1][i+1]:
-                        grid[-j-1][i+1] = "_"
+                    if alph_order[hor_order[-i-1]] not in grid[-j-2][i+1]:
+                        grid[-j-2][i+1] = "_"
                     else:
-                        keep_letter(alph_order[hor_order[-i-1]], grid[-j-1][i+1])
+                        keep_letter(alph_order[hor_order[-i-1]], grid[-j-2][i+1])
                         break
             if ver_order[i] != 0:
                 for j in range(size):
@@ -292,10 +292,10 @@ while exit_loop == False:
                         break
             if ver_order[-i-1] != 0:
                 for j in range(size):
-                    if alph_order[ver_order[-i-1]] not in grid[i+1][-j-1]:
-                        grid[i+1][-j-1] = "_"
+                    if alph_order[ver_order[-i-1]] not in grid[i+1][-j-2]:
+                        grid[i+1][-j-2] = "_"
                     else:
-                        keep_letter(alph_order[ver_order[-i-1]], grid[i+1][-j-1])
+                        keep_letter(alph_order[ver_order[-i-1]], grid[i+1][-j-2])
                         break
         
         for t in range(size+2):
