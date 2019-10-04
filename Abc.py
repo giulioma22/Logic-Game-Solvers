@@ -1,19 +1,19 @@
 
 # I N P U T   D A T A - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# size = 6
-# letters = 4
-# hor_order = [3, 0, 0, 4, 0, 1]
-# hor_order_rev = [0, 1, 4, 2, 0, 3]
-# ver_order = [0, 0, 4, 4, 4, 1]
-# ver_order_rev = [0, 0, 1, 0, 2, 3]
+size = 6
+letters = 4
+hor_order = [3, 0, 0, 4, 0, 1]
+hor_order_rev = [0, 1, 4, 2, 0, 3]
+ver_order = [0, 0, 4, 4, 4, 1]
+ver_order_rev = [0, 0, 1, 0, 2, 3]
 
-size = 5
-letters = 3
-hor_order = [0, 2, 3, 2, 3]
-hor_order_rev = [0, 0, 1, 3, 1]
-ver_order = [0, 3, 3, 2, 2]
-ver_order_rev = [0, 0, 2, 1, 1]
+# size = 5
+# letters = 3
+# hor_order = [0, 2, 3, 2, 3]
+# hor_order_rev = [0, 0, 1, 3, 1]
+# ver_order = [0, 3, 3, 2, 2]
+# ver_order_rev = [0, 0, 2, 1, 1]
 
 # size = int(input("Enter grid SIZE: "))
 # letters = int(input("Enter number of DIFFERENT LETTERS (e.g. 3 if A, B and C): "))
@@ -209,7 +209,6 @@ def is_same_matrix(last_grid, grid):
 
 #Guess new letters
 def guess(guess_array):     #guess_array: 1st is idx letter, 2nd is side
-    guess_letter = []
     keep_guessing = True
     while keep_guessing:
         if guess_array[0] > size and guess_array[1] <= 3:
@@ -219,34 +218,36 @@ def guess(guess_array):     #guess_array: 1st is idx letter, 2nd is side
             guess_letter = alph_order[hor_order[guess_array[0]]]
             if guess_letter != "_":
                 for i in range(size):
-                    if guess_letter in grid[i+1][guess_letter+1] and isinstance(grid[i+1][guess_letter+1], list): 
-                        grid[i+1][guess_letter+1] = guess_letter
+                    if guess_letter in grid[-i-2][guess_array[0]+1] and isinstance(grid[-i-2][guess_array[0]+1], list): 
+                        grid[-i-2][guess_array[0]+1] = guess_letter
                         keep_guessing = False
-                guess_array[0] += 1
+            guess_array[0] += 1
         elif guess_array[1] == 1:
             guess_letter = alph_order[hor_order_rev[guess_array[0]]]
             if guess_letter != "_":
                 for i in range(size):
-                    if guess_letter in grid[-i-2][guess_letter+1] and isinstance(grid[-i-2][guess_letter+1], list): 
-                        grid[-i-2][guess_letter+1] = guess_letter
+                    if guess_letter in grid[i+1][guess_array[0]+1] and isinstance(grid[i+1][guess_array[0]+1], list): 
+                        grid[i+1][guess_array[0]+1] = guess_letter
                         keep_guessing = False
-                guess_array[0] += 1
+            guess_array[0] += 1
         elif guess_array[1] == 2:
             guess_letter = alph_order[ver_order[guess_array[0]]]
             if guess_letter != "_":
                 for i in range(size):
-                    if guess_letter in grid[guess_letter+1][i+1] and isinstance(grid[guess_letter+1][i+1], list): 
-                        grid[guess_letter+1][i+1] = guess_letter
+                    if guess_letter in grid[guess_array[0]+1][-i-2] and isinstance(grid[guess_array[0]+1][-i-2], list): 
+                        grid[guess_array[0]+1][-i-2] = guess_letter
                         keep_guessing = False
-                guess_array[0] += 1
+            guess_array[0] += 1
         elif guess_array[1] == 3:
             guess_letter = alph_order[ver_order_rev[guess_array[0]]]
             if guess_letter != "_":
                 for i in range(size):
-                    if guess_letter in grid[guess_letter+1][-i-2] and isinstance(grid[guess_letter+1][-i-2], list): 
-                        grid[guess_letter+1][-i-2] = guess_letter
+                    if guess_letter in grid[guess_array[0]+1][i+1] and isinstance(grid[guess_array[0]+1][i+1], list): 
+                        grid[guess_array[0]+1][i+1] = guess_letter
                         keep_guessing = False
-                guess_array[0] += 1
+            guess_array[0] += 1
+    for i in range(size+2):
+        print(grid[i])
     return
 
 # I N I T I A L I Z E   G R I D - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -301,6 +302,7 @@ exit_loop = False
 same_grid = False
 complete_grid = 0
 offset = 1
+guess_try = False
 
 while complete_grid != size**2 and exit_loop == False:
     same_grid = False
@@ -387,7 +389,6 @@ while complete_grid != size**2 and exit_loop == False:
     # for i in range(size+2):
     #     print(grid[i])
 
-    #Dominating letters per line
     same_grid = False
     cnt = 0
 
@@ -404,23 +405,23 @@ while complete_grid != size**2 and exit_loop == False:
                         if alph_order[l+1] in grid[i+1][j+1]:
                             check_singles(alph_order[l+1], i+1, j+1)
 
-        #Clear lines
-        complete_grid = clear_lines()
-
         #Side constraints check
         side_priority("top")
         side_priority("bottom")
         side_priority("left")
         side_priority("right")
 
+        #Clear lines
+        complete_grid = clear_lines()
+
         #Check if algorithm is looping infinitely
-        if is_same_matrix(last_grid, grid):
-            if cnt == 0:
-                same_grid = True
-                exit_loop = True
+        if is_same_matrix(last_grid, grid) and complete_grid != size**2:
+            same_grid = True
+            if cnt == 0:    #If didn't change 1st try, means it will loop
+                guess_try = True
             else:
-                same_grid = True
                 exit_loop = False
+                # guess_try = False
 
         #Count the loops of 2nd WHILE
         cnt += 1
@@ -432,13 +433,16 @@ while complete_grid != size**2 and exit_loop == False:
         # for t in range(size+2):
         #     print(last_grid[t])
 
-    if same_grid == True and complete_grid != size**2:
-        print("Try guessing letters")
+    if guess_try and complete_grid != size**2:
+        for i in range(size+2):
+            print(grid[i])
+        print("\nTry guessing letter\n")
         # if guess_try == 0:    #For nested guests
         #     saved_matrix = []
         #     guess_array = [0, 0]
         if first_guess:
             is_same_matrix(saved_matrix, grid)
+            first_guess = False
         else:
             is_same_matrix(grid, saved_matrix)
         guess(guess_array)

@@ -1,6 +1,6 @@
 # LOGIC GAME SOLVERS
 
-From the app "100 Logic Games - Time Killers" by Andrea Sabbatini
+From the "100 Logic Games - Time Killers" app by Andrea Sabbatini
 
 ## Abc - Fill the board with ABC
 
