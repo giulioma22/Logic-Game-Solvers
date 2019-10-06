@@ -8,33 +8,33 @@
 # ver_order = [2, 3, 1, 1, 3, 2]
 # ver_order_rev = [3, 2, 0, 0, 0, 0]
 
-# size = 5
-# letters = 3
-# hor_order = [0, 2, 3, 2, 3]
-# hor_order_rev = [0, 0, 1, 3, 1]
-# ver_order = [0, 3, 3, 2, 2]
-# ver_order_rev = [0, 0, 2, 1, 1]
+size = 7
+letters = 5
+hor_order = [5, 3, 3, 2, 0, 4, 0]
+hor_order_rev = [0, 4, 4, 5, 3, 2, 5]
+ver_order = [0, 0, 0, 1, 5, 2, 0]
+ver_order_rev = [0, 1, 5, 2, 0, 4, 0]
 
-size = int(input("Enter grid SIZE: "))
-letters = int(input("Enter number of DIFFERENT LETTERS (e.g. 3 if A, B and C): "))
-hor_order = []
-hor_order_rev = []
-ver_order = []
-ver_order_rev = []
+# size = int(input("Enter grid SIZE: "))
+# letters = int(input("Enter number of DIFFERENT LETTERS (e.g. 3 if A, B and C): "))
+# hor_order = []
+# hor_order_rev = []
+# ver_order = []
+# ver_order_rev = []
 
-#User input commands
-print("Enter TOP-border letters, left to right one at a time (0 = blank, 1 = A, 2 = B, ...): ")
-for i in range(size):    
-    hor_order.append(int(input()))
-print("Enter BOTTOM-border letters, left to right: ")
-for i in range(size):    
-    hor_order_rev.append(int(input()))
-print("Enter LEFT-border letters, top to bottom: ")
-for i in range(size):    
-    ver_order.append(int(input()))
-print("Enter RIGHT-border letters, top to bottom: ")
-for i in range(size):    
-    ver_order_rev.append(int(input()))
+# #User input commands
+# print("Enter TOP-border letters, left to right one at a time (0 = blank, 1 = A, 2 = B, ...): ")
+# for i in range(size):    
+#     hor_order.append(int(input()))
+# print("Enter BOTTOM-border letters, left to right: ")
+# for i in range(size):    
+#     hor_order_rev.append(int(input()))
+# print("Enter LEFT-border letters, top to bottom: ")
+# for i in range(size):    
+#     ver_order.append(int(input()))
+# print("Enter RIGHT-border letters, top to bottom: ")
+# for i in range(size):    
+#     ver_order_rev.append(int(input()))
 
 #Ordering arrays
 for i in range(size):
@@ -45,8 +45,10 @@ lower_limit = size - (letters - 1)
 alph_order = ["_", "A", "B", "C", "D", "E", "F"]
 guess_try = 0
 guess_array = [0, 0]
+guess_loop = 1
 first_guess = True
 
+exit_loop = False
 
 # F U N C T I O N S - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -216,8 +218,7 @@ def guess(guess_array):     #guess_array: 1st is idx letter, 2nd is side
                 guess_array[0] = 0
                 guess_array[1] += 1
             else:
-                exit_loop = True
-                break
+                return False
         if guess_array[1] == 0:
             guess_letter = alph_order[hor_order[guess_array[0]]]
             if guess_letter != "_":
@@ -332,7 +333,7 @@ for i in range(size):
 
 # M A I N   A L G O R I T H M - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-exit_loop = False
+# exit_loop = False
 same_grid = False
 complete_grid = 0
 offset = 1
@@ -457,9 +458,9 @@ while complete_grid != size**2 and exit_loop == False:
                 if not first_guess:
                     is_same_matrix(grid, saved_matrix)
                     complete_grid = clear_lines()
-                    print(" ERROR: Restoring grid... \n")
-                    for i in range(size+2):
-                        print(grid[i])
+                    print(" ERROR 1: Restoring grid... \n")
+                    # for i in range(size+2):
+                    #     print(grid[i])
 
         #Count the loops of 2nd WHILE
         cnt += 1
@@ -469,9 +470,9 @@ while complete_grid != size**2 and exit_loop == False:
             guess_try = True
             is_same_matrix(grid, saved_matrix)
             complete_grid = clear_lines()
-            print(" ERROR: Restoring grid... \n")
-            for i in range(size+2):
-                print(grid[i])
+            print(" ERROR 2: Restoring grid... \n")
+            # for i in range(size+2):
+            #     print(grid[i])
             
     #If not logically solvable, try most plausible guesses
     if guess_try == True:
@@ -487,7 +488,8 @@ while complete_grid != size**2 and exit_loop == False:
         #     for i in range(size+2):
         #         print(grid[i])
         print("\n" + "\x1b[3m" + " Trying probable combination... " + "\x1b[0m")
-        guess(guess_array)
+        if guess(guess_array) == False:
+            exit_loop = True
 
 
 # R E S U L T - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
