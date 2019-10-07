@@ -44,11 +44,10 @@ for i in range(size):
 lower_limit = size - (letters - 1)
 alph_order = ["_", "A", "B", "C", "D", "E", "F"]
 guess_try = 0
-guess_array = [0, 0]
+guess_array_1 = [0, 0]
+guess_array_2 = [0, 0]
 guess_loop = 1
 first_guess = True
-
-exit_loop = False
 
 # F U N C T I O N S - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -211,6 +210,7 @@ def is_same_matrix(grid_1, grid_2):
 
 #Guess new letters
 def guess(guess_array):     #guess_array: 1st is idx letter, 2nd is side
+    global exit_loop
     keep_guessing = True
     while keep_guessing == True:
         if guess_array[0] >= size:
@@ -218,7 +218,12 @@ def guess(guess_array):     #guess_array: 1st is idx letter, 2nd is side
                 guess_array[0] = 0
                 guess_array[1] += 1
             else:
-                return False
+                if guess_loop == 1:
+                    exit_loop = True
+                elif guess_loop == 2:
+                    guess_loop == 1
+                    print("Going back to 1st guess loop")
+                return
         if guess_array[1] == 0:
             guess_letter = alph_order[hor_order[guess_array[0]]]
             if guess_letter != "_":
@@ -290,21 +295,25 @@ def ultimate_check():
 grid = []
 last_grid = []
 saved_matrix = []
+saved_matrix_2 = []
 
 #Create the playing grid
 for i in range(size+2):
     grid.append([])
     last_grid.append([])
     saved_matrix.append([])
+    saved_matrix_2.append([])
     for j in range(size+2):
         if i != 0 and i != size+1 and j != 0 and j != size+1:
             grid[i].append("_")
             last_grid[i].append("_")
             saved_matrix[i].append("_")
+            saved_matrix_2[i].append("_")
         else:
             grid[i].append("/")
             last_grid[i].append("/")
             saved_matrix[i].append("/")
+            saved_matrix_2[i].append("/")
 
 #Add the side letters
 for i in range(size):
@@ -333,7 +342,7 @@ for i in range(size):
 
 # M A I N   A L G O R I T H M - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# exit_loop = False
+exit_loop = False
 same_grid = False
 complete_grid = 0
 offset = 1
@@ -456,7 +465,10 @@ while complete_grid != size**2 and exit_loop == False:
             if cnt == 0:    #If didn't change 1st try, means it will loop
                 guess_try = True
                 if not first_guess:
-                    is_same_matrix(grid, saved_matrix)
+                    if guess_loop == 1:
+                        is_same_matrix(grid, saved_matrix)
+                    elif guess_loop == 2:
+                        is_same_matrix(saved_matrix, saved_matrix_2)
                     complete_grid = clear_lines()
                     print(" ERROR 1: Restoring grid... \n")
                     # for i in range(size+2):
@@ -468,7 +480,10 @@ while complete_grid != size**2 and exit_loop == False:
         #If grid complete but incorrect, continue guessing
         if complete_grid == size**2 and ultimate_check() == False:
             guess_try = True
-            is_same_matrix(grid, saved_matrix)
+            if guess_loop == 1:
+                is_same_matrix(grid, saved_matrix)
+            elif guess_loop == 2:
+                is_same_matrix(saved_matrix, saved_matrix_2)
             complete_grid = clear_lines()
             print(" ERROR 2: Restoring grid... \n")
             # for i in range(size+2):
@@ -477,19 +492,21 @@ while complete_grid != size**2 and exit_loop == False:
     #If not logically solvable, try most plausible guesses
     if guess_try == True:
         if first_guess:
-            print("\n Saving grid... \n")
-            for i in range(size+2):
-                print(grid[i])
-            is_same_matrix(saved_matrix, grid)
-            first_guess = False
-        # else:
-        #     is_same_matrix(grid, saved_matrix)
-        #     print("\n ERROR: Restoring grid... \n")
-        #     for i in range(size+2):
-        #         print(grid[i])
+            if guess_loop == 1:
+                print("\n Saving grid 1... \n")
+                for i in range(size+2):
+                    print(grid[i])
+                is_same_matrix(saved_matrix, grid)
+                first_guess = False
+            elif guess_loop == 2:
+                print("\n Saving grid 2... \n")
+                for i in range(size+2):
+                    print(saved_matrix[i])
+                is_same_matrix(saved_matrix_2, saved_matrix)
+                first_guess = False
+
         print("\n" + "\x1b[3m" + " Trying probable combination... " + "\x1b[0m")
-        if guess(guess_array) == False:
-            exit_loop = True
+        guess(guess_array)
 
 
 # R E S U L T - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
