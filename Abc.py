@@ -1,6 +1,8 @@
 
 # I N P U T   D A T A - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+alph_order = ["_", "A", "B", "C", "D", "E", "F", "G"]
+
 # size = 6
 # letters = 4
 # hor_order = [3, 0, 0, 4, 0, 1]
@@ -36,13 +38,30 @@ print("Enter RIGHT-border letters, top to bottom: ")
 for i in range(size):    
     ver_order_rev.append(int(input()))
 
+#Add letters in starting grid
+start_letters = []
+start_array = []
+start_check = str(input("Any letter already in the grid? y/n "))
+while start_check != "y" and start_check != "n":
+    print("Invalid input: press 'y' if yes, 'n' if not")
+    start_check = str(input("Any letter already in the grid? y/n "))
+if start_check == "y":
+    n_already = int(input("Enter number of letters already in grid: "))
+    for i in range (n_already):
+        let = int(input("Enter letter (1 = A, 2 = B, ...): "))
+        start_letters.append(alph_order[let])
+        row = int(input("In which row? "))
+        clm = int(input("In which column? "))
+        start_array.append([row, clm])
+
+
 #Ordering arrays
 for i in range(size):
     hor_order.append(hor_order_rev[-i-1])
     ver_order.append(ver_order_rev[-i-1])
 
+
 lower_limit = size - (letters - 1)
-alph_order = ["_", "A", "B", "C", "D", "E", "F"]
 guess_try = 0
 guess_array_1 = [0, 0]
 guess_array_2 = [0, 0]
@@ -50,6 +69,7 @@ guess_loop = 1
 loop_1_over = False
 first_guess_1 = True
 first_guess_2 = True
+
 
 # F U N C T I O N S - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -73,7 +93,7 @@ def keep_letter(letter, cell):
                 cell[i] = "_"
     return
 
-#Detect only letter in cell list
+#Detect single letter in cell
 def only_in_cell(cell):
     only_letter = ""
     if isinstance(cell, str):
@@ -229,6 +249,7 @@ def is_same_matrix(grid_1, grid_2):
                     grid_1[i+1][j+1] = grid_2[i+1][j+1]
     return same_matrix
 
+#Check if line has equal free spots and missing letters
 def min_spaces_left():
     for i in range(size):
         n_empty_hor = 0
@@ -255,8 +276,6 @@ def min_spaces_left():
                 if isinstance(grid[k+1][i+1], list) and only_in_cell(grid[k+1][i+1]) != "":
                     grid[k+1][i+1] = only_in_cell(grid[k+1][i+1])
     return
-
-
 
 #Guess new letters
 def guess():     #guess_array: 1st is idx letter, 2nd is side
@@ -395,6 +414,7 @@ def ultimate_check():
             return False
     return
 
+
 # I N I T I A L I Z E   G R I D - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 grid = []
@@ -420,12 +440,17 @@ for i in range(size+2):
             saved_matrix[i].append("/")
             saved_matrix_2[i].append("/")
 
-#Add the side letters
+#Add side letters
 for i in range(size):
     grid[0][i+1] = alph_order[hor_order[i]]
     grid[size+1][i+1] = alph_order[hor_order[-i-1]]
     grid[i+1][0] = alph_order[ver_order[i]]
     grid[i+1][size+1] = alph_order[ver_order[-i-1]]
+
+#Add letters already in grid (if any)
+if start_check == "y":
+    for i in range(len(start_letters)):
+        grid[start_array[i][0]][start_array[i][1]] = start_letters[i]
 
 #Drawing the STARTING grid
 print("\n" + "\x1b[1;33;44m" + " STARTING GRID "  + "\x1b[0m" + "\n")
@@ -442,6 +467,12 @@ for i in range(size):
             grid[i+1][j+1] = ["A", "B", "C", "D", "E"]
         if letters == 6:
             grid[i+1][j+1] = ["A", "B", "C", "D", "E", "F"]
+        if letters == 7:
+            grid[i+1][j+1] = ["A", "B", "C", "D", "E", "F", "G"]
+
+if start_check == "y":
+    for i in range(len(start_letters)):
+        grid[start_array[i][0]][start_array[i][1]] = start_letters[i]
 
 
 # M A I N   A L G O R I T H M - - - - - - - - - - - - - - - - - - - - - - - - - - -
