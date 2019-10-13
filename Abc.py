@@ -3,13 +3,15 @@
 
 alph_order = ["_", "A", "B", "C", "D", "E", "F", "G"]
 
-size = 6
-letters = 4
-hor_order = [3, 0, 0, 4, 0, 1]
-hor_order_rev = [0, 1, 4, 2, 0, 3]
-ver_order = [0, 0, 4, 4, 4, 1]
-ver_order_rev = [0, 0, 1, 0, 2, 3]
+# # Puzzle 30
+# size = 6
+# letters = 4
+# hor_order = [3, 0, 0, 4, 0, 1]
+# hor_order_rev = [0, 1, 4, 2, 0, 3]
+# ver_order = [0, 0, 4, 4, 4, 1]
+# ver_order_rev = [0, 0, 1, 0, 2, 3]
 
+# # Puzzle 40
 # size = 7
 # letters = 5
 # hor_order = [5, 3, 3, 2, 0, 4, 0]
@@ -17,26 +19,26 @@ ver_order_rev = [0, 0, 1, 0, 2, 3]
 # ver_order = [0, 0, 0, 1, 5, 2, 0]
 # ver_order_rev = [0, 1, 5, 2, 0, 4, 0]
 
-# size = int(input("Enter grid SIZE: "))
-# letters = int(input("Enter number of DIFFERENT LETTERS (e.g. 3 if A, B and C): "))
-# hor_order = []
-# hor_order_rev = []
-# ver_order = []
-# ver_order_rev = []
+size = int(input("Enter grid SIZE: "))
+letters = int(input("Enter number of DIFFERENT LETTERS (e.g. 3 if A, B and C): "))
+hor_order = []
+hor_order_rev = []
+ver_order = []
+ver_order_rev = []
 
-# #User input commands
-# print("Enter TOP-border letters, left to right one at a time (0 = blank, 1 = A, 2 = B, ...): ")
-# for i in range(size):    
-#     hor_order.append(int(input()))
-# print("Enter BOTTOM-border letters, left to right: ")
-# for i in range(size):    
-#     hor_order_rev.append(int(input()))
-# print("Enter LEFT-border letters, top to bottom: ")
-# for i in range(size):    
-#     ver_order.append(int(input()))
-# print("Enter RIGHT-border letters, top to bottom: ")
-# for i in range(size):    
-#     ver_order_rev.append(int(input()))
+#User input commands
+print("Enter TOP-border letters, left to right one at a time (0 = blank, 1 = A, 2 = B, ...): ")
+for i in range(size):    
+    hor_order.append(int(input()))
+print("Enter BOTTOM-border letters, left to right: ")
+for i in range(size):    
+    hor_order_rev.append(int(input()))
+print("Enter LEFT-border letters, top to bottom: ")
+for i in range(size):    
+    ver_order.append(int(input()))
+print("Enter RIGHT-border letters, top to bottom: ")
+for i in range(size):    
+    ver_order_rev.append(int(input()))
 
 #Add letters in starting grid
 start_letters = []
@@ -53,7 +55,6 @@ if start_check == "y":
         row = int(input("In which row? "))
         clm = int(input("In which column? "))
         start_array.append([row, clm])
-
 
 #Ordering arrays
 for i in range(size):
