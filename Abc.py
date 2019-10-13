@@ -159,70 +159,34 @@ def side_priority(grid_side):
         first_cell = []
         for j in range(lower_limit):
             if grid_side == "top":
-                cell_value = grid[j+1][i+1]
-                if alph_order[hor_order[i]] != "_":
-                    side_letter = alph_order[hor_order[i]]
-                    if side_letter in cell_value:
-                        if switch_encount == 0:
-                            first_cell = [j+1, i+1]
-                        switch_encount += 1
-                        if side_letter == cell_value:
-                            break
-                    else:
-                        if switch_encount == 0:
-                            grid[j+1][i+1] = "_"
-                        if isinstance(cell_value, str) and cell_value != "_" and switch_encount == 1:
-                            grid[first_cell[0]][first_cell[1]] = side_letter
-                            break
-            if grid_side == "bottom":
-                cell_value = grid[-j-2][i+1]
-                if alph_order[hor_order[-i-1]] != "_":
-                    side_letter = alph_order[hor_order[-i-1]]
-                    if side_letter in cell_value:
-                        if switch_encount == 0:
-                            first_cell = [-j-2, i+1]
-                        switch_encount += 1
-                        if side_letter == cell_value:
-                            break
-                    else:
-                        if switch_encount == 0:
-                            grid[-j-2][i+1] = "_"
-                        if isinstance(cell_value, str) and cell_value != "_" and switch_encount == True:
-                            grid[first_cell[0]][first_cell[1]] = side_letter
-                            break
-            if grid_side == "left":
-                cell_value = grid[i+1][j+1]
-                if alph_order[ver_order[i]] != "_":
-                    side_letter = alph_order[ver_order[i]]
-                    if side_letter in cell_value:
-                        if switch_encount == 0:    
-                            first_cell = [i+1, j+1]
-                        switch_encount += 1
-                        if side_letter == cell_value:
-                            break
-                    else:
-                        if switch_encount == 0:
-                            grid[i+1][j+1] = "_"
-                        if isinstance(cell_value, str) and cell_value != "_" and switch_encount == True:
-                            grid[first_cell[0]][first_cell[1]] = side_letter
-                            break
-            if grid_side == "right":
-                cell_value = grid[i+1][-j-2]
-                if alph_order[ver_order[-i-1]] != "_":
-                    side_letter = alph_order[ver_order[-i-1]]
-                    if side_letter in cell_value:
-                        if switch_encount == 0:
-                            first_cell = [i+1, -j-2]
-                        switch_encount += 1
-                        if side_letter == cell_value:
-                            break
-                    else:
-                        if switch_encount == 0:
-                            grid[i+1][-j-2] = "_"
-                        if isinstance(cell_value, str) and cell_value != "_" and switch_encount == True:
-                            grid[first_cell[0]][first_cell[1]] = side_letter
-                            break
-
+                cell_0 = j+1
+                cell_1 = i+1
+                side_letter = alph_order[hor_order[i]]
+            elif grid_side == "bottom":
+                cell_0 = -j-2
+                cell_1 = i+1
+                side_letter = alph_order[hor_order[-i-1]]
+            elif grid_side == "left":
+                cell_0 = i+1
+                cell_1 = j+1
+                side_letter = alph_order[ver_order[i]]
+            elif grid_side == "right":
+                cell_0 = i+1
+                cell_1 = -j-2
+                side_letter = alph_order[ver_order[-i-1]] 
+            if side_letter != "_":
+                if side_letter in grid[cell_0][cell_1]:
+                    if switch_encount == 0:
+                        first_cell = [cell_0, cell_1]
+                    switch_encount += 1
+                    if side_letter == grid[cell_0][cell_1]:
+                        break
+                else:
+                    if switch_encount == 0:
+                        grid[cell_0][cell_1] = "_"
+                    if isinstance(grid[cell_0][cell_1], str) and grid[cell_0][cell_1] != "_" and switch_encount == 1:
+                        grid[first_cell[0]][first_cell[1]] = side_letter
+                        break
     return
 
 #Copy and check if matrix did (not) change after 1 loop
