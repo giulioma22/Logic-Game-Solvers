@@ -3,12 +3,12 @@
 
 alph_order = ["_", "A", "B", "C", "D", "E", "F", "G"]
 
-# size = 6
-# letters = 4
-# hor_order = [3, 0, 0, 4, 0, 1]
-# hor_order_rev = [0, 1, 4, 2, 0, 3]
-# ver_order = [0, 0, 4, 4, 4, 1]
-# ver_order_rev = [0, 0, 1, 0, 2, 3]
+size = 6
+letters = 4
+hor_order = [3, 0, 0, 4, 0, 1]
+hor_order_rev = [0, 1, 4, 2, 0, 3]
+ver_order = [0, 0, 4, 4, 4, 1]
+ver_order_rev = [0, 0, 1, 0, 2, 3]
 
 # size = 7
 # letters = 5
@@ -17,26 +17,26 @@ alph_order = ["_", "A", "B", "C", "D", "E", "F", "G"]
 # ver_order = [0, 0, 0, 1, 5, 2, 0]
 # ver_order_rev = [0, 1, 5, 2, 0, 4, 0]
 
-size = int(input("Enter grid SIZE: "))
-letters = int(input("Enter number of DIFFERENT LETTERS (e.g. 3 if A, B and C): "))
-hor_order = []
-hor_order_rev = []
-ver_order = []
-ver_order_rev = []
+# size = int(input("Enter grid SIZE: "))
+# letters = int(input("Enter number of DIFFERENT LETTERS (e.g. 3 if A, B and C): "))
+# hor_order = []
+# hor_order_rev = []
+# ver_order = []
+# ver_order_rev = []
 
-#User input commands
-print("Enter TOP-border letters, left to right one at a time (0 = blank, 1 = A, 2 = B, ...): ")
-for i in range(size):    
-    hor_order.append(int(input()))
-print("Enter BOTTOM-border letters, left to right: ")
-for i in range(size):    
-    hor_order_rev.append(int(input()))
-print("Enter LEFT-border letters, top to bottom: ")
-for i in range(size):    
-    ver_order.append(int(input()))
-print("Enter RIGHT-border letters, top to bottom: ")
-for i in range(size):    
-    ver_order_rev.append(int(input()))
+# #User input commands
+# print("Enter TOP-border letters, left to right one at a time (0 = blank, 1 = A, 2 = B, ...): ")
+# for i in range(size):    
+#     hor_order.append(int(input()))
+# print("Enter BOTTOM-border letters, left to right: ")
+# for i in range(size):    
+#     hor_order_rev.append(int(input()))
+# print("Enter LEFT-border letters, top to bottom: ")
+# for i in range(size):    
+#     ver_order.append(int(input()))
+# print("Enter RIGHT-border letters, top to bottom: ")
+# for i in range(size):    
+#     ver_order_rev.append(int(input()))
 
 #Add letters in starting grid
 start_letters = []
@@ -46,7 +46,7 @@ while start_check != "y" and start_check != "n":
     print("Invalid input: press 'y' if yes, 'n' if not")
     start_check = str(input("Any letter already in the grid? y/n "))
 if start_check == "y":
-    n_already = int(input("Enter number of letters already in grid: "))
+    n_already = int(input("How many letters already in grid? "))
     for i in range (n_already):
         let = int(input("Enter letter (1 = A, 2 = B, ...): "))
         start_letters.append(alph_order[let])
@@ -321,81 +321,43 @@ def guess():     #guess_array: 1st is idx letter, 2nd is side
                     continue
 
         print("Guess array " + str(guess_array) + " - Guess loop " + str(guess_loop))
-        
-        if guess_array[1] == 0:
-            guess_letter = alph_order[hor_order[guess_array[0]]]
+
+        for i in range(size):
+            if guess_array[1] == 0:
+                guess_letter = alph_order[hor_order[guess_array[0]]]
+                print_side = "top"
+                cell_0 = -i-2
+                cell_1 = guess_array[0]+1
+            elif guess_array[1] == 1:
+                guess_letter = alph_order[hor_order_rev[guess_array[0]]]
+                print_side = "bottom"
+                cell_0 = i+1
+                cell_1 = guess_array[0]+1
+            elif guess_array[1] == 2:
+                guess_letter = alph_order[ver_order[guess_array[0]]]
+                print_side = "left"
+                cell_0 = guess_array[0]+1
+                cell_1 = -i-2
+            elif guess_array[1] == 3:
+                guess_letter = alph_order[ver_order_rev[guess_array[0]]]
+                print_side = "right"
+                cell_0 = guess_array[0]+1
+                cell_1 = i+1
             if guess_letter != "_":
-                for i in range(size):
-                    if guess_letter in grid[-i-2][guess_array[0]+1] and isinstance(grid[-i-2][guess_array[0]+1], list):
-                        grid[-i-2][guess_array[0]+1] = guess_letter
-                        print("\n Level " + str(guess_loop) + " - Letter " + str(guess_letter) + "(top) in [" + str(-i-2) + ", " + str(guess_array[0]+1) + "]\n")
-                        if guess_loop == 1 and loop_1_over:
-                            print("\n Saving grid 2.2... " + str(guess_array_2[0]) + "\n")
-                            print_grid()
-                            is_same_matrix(saved_matrix_2, grid)
-                            # complete_grid = clear_lines()
-                            guess_loop = 2
-                            first_guess_2 = False
-                        else:
-                            keep_guessing = False
-                        break
-            guess_array[0] += 1
-        elif guess_array[1] == 1:
-            guess_letter = alph_order[hor_order_rev[guess_array[0]]]
-            if guess_letter != "_":
-                for i in range(size):
-                    if guess_letter in grid[i+1][guess_array[0]+1] and isinstance(grid[i+1][guess_array[0]+1], list): 
-                        grid[i+1][guess_array[0]+1] = guess_letter
-                        print("\n Level " + str(guess_loop) + " - Letter " + str(guess_letter) + "(bottom) in [" + str(i+1) + ", " + str(guess_array[0]+1) + "]\n")
-                        if guess_loop == 1 and loop_1_over:
-                            print("\n Saving grid 2... \n")
-                            print_grid()
-                            is_same_matrix(saved_matrix_2, grid)
-                            # complete_grid = clear_lines()
-                            guess_loop = 2
-                            first_guess_2 = False
-                        else:
-                            keep_guessing = False
-                        break
-            guess_array[0] += 1
-        elif guess_array[1] == 2:
-            guess_letter = alph_order[ver_order[guess_array[0]]]
-            if guess_letter != "_":
-                for i in range(size):
-                    if guess_letter in grid[guess_array[0]+1][-i-2] and isinstance(grid[guess_array[0]+1][-i-2], list): 
-                        grid[guess_array[0]+1][-i-2] = guess_letter
-                        print("\n Level " + str(guess_loop) + " - Letter " + str(guess_letter) + "(left) in [" + str(guess_array[0]+1) + ", " + str(-i-2) + "]\n")
-                        if guess_loop == 1 and loop_1_over:
-                            print("\n Saving grid 2... \n")
-                            print_grid()
-                            is_same_matrix(saved_matrix_2, grid)
-                            # complete_grid = clear_lines()
-                            guess_loop = 2
-                            first_guess_2 = False
-                        else:
-                            keep_guessing = False
-                        break
-            guess_array[0] += 1
-        elif guess_array[1] == 3:
-            guess_letter = alph_order[ver_order_rev[guess_array[0]]]
-            if guess_letter != "_":
-                for i in range(size):
-                    if guess_letter in grid[guess_array[0]+1][i+1] and isinstance(grid[guess_array[0]+1][i+1], list): 
-                        grid[guess_array[0]+1][i+1] = guess_letter
-                        print("\n Level " + str(guess_loop) + " - Letter " + str(guess_letter) + "(right) in [" + str(guess_array[0]+1) + ", " + str(i+1) + "]\n")
-                        if guess_loop == 1 and loop_1_over:
-                            print("\n Saving grid 2... \n")
-                            print_grid()
-                            is_same_matrix(saved_matrix_2, grid)
-                            # complete_grid = clear_lines()
-                            guess_loop = 2
-                            first_guess_2 = False
-                        else:
-                            keep_guessing = False
-                        break
-            guess_array[0] += 1
-    # if loop_1_over:
-    #     guess_loop = 2
+                if guess_letter in grid[cell_0][cell_1] and isinstance(grid[cell_0][cell_1], list):
+                    grid[cell_0][cell_1] = guess_letter
+                    print("\n Level " + str(guess_loop) + " - Letter " + str(guess_letter) + "(" + print_side + ") in [" + str(cell_0) + ", " + str(cell_1) + "]\n")
+                    if guess_loop == 1 and loop_1_over:
+                        print("\n Saving grid 2.2... " + str(guess_array_2[0]) + "\n")
+                        print_grid()
+                        is_same_matrix(saved_matrix_2, grid)
+                        # complete_grid = clear_lines()
+                        guess_loop = 2
+                        first_guess_2 = False
+                    else:
+                        keep_guessing = False
+                    break
+        guess_array[0] += 1
     return
 
 #Last check for all letters in rows and columns
