@@ -2,7 +2,7 @@
 
 Reference puzzles from "100 Logic Games - Time Killers" app by Andrea Sabbatini
 
-## :heavy_check_mark: Abc - Fill the board with ABC (Solved: ALL)
+## :capital_abcd: Abc - Fill the board with ABC (Solved: ALL) :heavy_check_mark:
 
 The goal is to put the letters A, B and C in the board. 
 
@@ -11,7 +11,7 @@ The goal is to put the letters A, B and C in the board.
 Each letter appears once in every row and column and you're told which letter you see first from the border.
 Since most puzzles can contain empty spaces, the hint on the border does not always match the tile next to it.
 
-## :thought_balloon: Skyscrapers - Guess Skyscrapers from the Skyline (Solved: 0)
+## :city_sunrise: Skyscrapers - Guess Skyscrapers from the Skyline (Solved: 0) :hourglass_flowing_sand:
 
 The central grid represents a city, as seen from above. Each square contains a Skyscraper, of different height.
 The goal is to guess the height of each Skyscraper.

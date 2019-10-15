@@ -49,6 +49,61 @@ if start_check == "y":
 def print_grid():
     for i in range(size+2):
         print(grid[i])
+    print("\n")
+    return
+
+#Remove number from cell
+def remove(number, cell):
+    if isinstance(cell, list) and number in cell:
+        cell[cell.index(number)] = "_"
+    return
+
+#Clear lines
+def clear_lines():
+    complete_grid = 0
+    for i in range(size):
+        for j in range(size):
+            if isinstance(grid[i+1][j+1], int):
+                complete_grid += 1
+                for k in range(size):
+                    if isinstance(grid[k+1][j+1], list) and grid[i+1][j+1] in grid[k+1][j+1]:
+                        remove(grid[i+1][j+1], grid[k+1][j+1])
+                    if isinstance(grid[i+1][k+1], list) and grid[i+1][j+1] in grid[i+1][k+1]:
+                        remove(grid[i+1][j+1], grid[i+1][k+1])
+    return complete_grid
+
+#Check and confirm single numbers
+def check_singles(number, x, y):
+    appears_once_horiz = False
+    appears_once_vert = False
+    switch_hor = False
+    switch_ver = False
+
+    for i in range(size):
+        #Only one in line?
+        if isinstance(grid[x][i+1], list) and number in grid[x][i+1]:
+            if appears_once_horiz == False and switch_hor == False:
+                appears_once_horiz = True
+            else:
+                appears_once_horiz = False
+                switch_hor = True    
+        #Only one in column?
+        if isinstance(grid[i+1][y], list) and number in grid[i+1][y]:
+            if appears_once_vert == False and switch_ver == False:
+                appears_once_vert = True
+            else:
+                appears_once_vert = False
+                switch_ver = True
+    
+    #Confirm single numbers
+    if appears_once_horiz == True or appears_once_vert == True:
+        grid[x][y] = number
+        return
+    else:
+        return False
+
+def count_skys(line):
+    
     return
 
 # I N I T I A L I Z E   G R I D - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -94,4 +149,59 @@ if start_check == "y":
     for i in range(len(start_numbers)):
         grid[start_array[i][0]][start_array[i][1]] = start_numbers[i]
 
+# M A I N   A L G O R I T H M - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+#Check for min and max side numbers
+for i in range(size):
+    if hor_order[i] == size:
+        cnt = 1
+        for j in range(size):
+            grid[j+1][i+1] = cnt
+            cnt += 1
+    elif hor_order[i] == 1:
+        grid[1][i+1] = size
+    else:
+        remove(size, grid[1][i+1])
+    if hor_order_rev[i] == size:
+        cnt = 1
+        for j in range(size):
+            grid[-j-2][i+1] = cnt
+            cnt += 1
+    elif hor_order_rev[i] == 1:
+        grid[-2][i+1] = size
+    else:
+        remove(size, grid[-2][i+1])
+    if ver_order[i] == size:
+        cnt = 1
+        for j in range(size):
+            grid[i+1][j+1] = cnt
+            cnt += 1
+    elif ver_order[i] == 1:
+        grid[i+1][1] = size
+    else:
+        remove(size, grid[i+1][1])
+    if ver_order_rev[i] == size:
+        cnt = 1
+        for j in range(size):
+            grid[i+1][-j-2] = cnt
+            cnt += 1
+    elif ver_order_rev[i] == 1:
+        grid[i+1][-2] = size
+    else:
+        remove(size, grid[i+1][-2])
+
 print_grid()
+
+clear_lines()
+
+print_grid()
+
+for i in range(size):
+    for j in range(size):
+        if isinstance(grid[i+1][j+1], list):
+            for num in range(size):
+                if num+1 in grid[i+1][j+1]:
+                    check_singles(num+1, i+1, j+1)
+
+print_grid()
+
