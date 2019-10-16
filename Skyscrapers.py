@@ -102,9 +102,17 @@ def check_singles(number, x, y):
     else:
         return False
 
-def count_skys(line):
-    
-    return
+def count_skys(row, col):
+    hor_skys = 0
+    max_hor = 0
+    ver_skys = 0
+    max_ver = 0
+    for i in range(size):
+        if isinstance(grid[row][i+1], int) and grid[row][i+1] > max_hor:
+            max_hor += 1
+        if isinstance(grid[i+1][col], int) and grid[i+1][col] > max_ver:
+            max_ver += 1  
+    return [max_hor, max_ver]
 
 # I N I T I A L I Z E   G R I D - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -204,4 +212,6 @@ for i in range(size):
                     check_singles(num+1, i+1, j+1)
 
 print_grid()
+
+print(count_skys(1, 1))
 
