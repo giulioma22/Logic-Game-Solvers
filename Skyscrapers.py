@@ -27,21 +27,21 @@ ver_order_rev = [1, 2, 2, 2]
 # for i in range(size):    
 #     ver_order_rev.append(int(input()))
 
-#Add numbers in starting grid
-start_numbers = []
-start_array = []
-start_check = str(input("Any number already in the grid? y/n "))
-while start_check != "y" and start_check != "n":
-    print("Invalid input: press 'y' if yes, 'n' if not")
-    start_check = str(input("Any number already in the grid? y/n "))
-if start_check == "y":
-    n_already = int(input("How many numbers already in grid? "))
-    for i in range (n_already):
-        num = int(input("Enter number: "))
-        start_numbers.append(num)
-        row = int(input("In which row? "))
-        clm = int(input("In which column? "))
-        start_array.append([row, clm])
+# #Add numbers in starting grid
+# start_numbers = []
+# start_array = []
+# start_check = str(input("Any number already in the grid? y/n "))
+# while start_check != "y" and start_check != "n":
+#     print("Invalid input: press 'y' if yes, 'n' if not")
+#     start_check = str(input("Any number already in the grid? y/n "))
+# if start_check == "y":
+#     n_already = int(input("How many numbers already in grid? "))
+#     for i in range (n_already):
+#         num = int(input("Enter number: "))
+#         start_numbers.append(num)
+#         row = int(input("In which row? "))
+#         clm = int(input("In which column? "))
+#         start_array.append([row, clm])
 
 # F U N C T I O N S - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -102,17 +102,48 @@ def check_singles(number, x, y):
     else:
         return False
 
-def count_skys(row, col):
-    hor_skys = 0
-    max_hor = 0
-    ver_skys = 0
-    max_ver = 0
+#Count skyscrapers and keep track of number seen
+def count_skys(side, line):
+    in_line = []
+    hidden = []
+    cell = 0
     for i in range(size):
-        if isinstance(grid[row][i+1], int) and grid[row][i+1] > max_hor:
-            max_hor += 1
-        if isinstance(grid[i+1][col], int) and grid[i+1][col] > max_ver:
-            max_ver += 1  
-    return [max_hor, max_ver]
+        if side == "Top":
+            cell = grid[i+1][line+1]
+        elif side == "Bottom":
+            cell = grid[-i-2][line+1]
+        elif side == "Left":
+            cell = grid[line+1][i+1]
+        elif side == "Right":
+            cell = grid[line+1][-i-2]
+
+        if isinstance(cell, int):
+            if cell > in_line[-1]:
+                in_line.append(cell)
+            else:
+                hidden.append(cell)
+    return [in_line, hidden]
+
+def side_constraint(side, line):
+    cell = 0
+    order = []
+    for i in range(size):
+        if side == "Top":
+            cell = grid[i+1][line+1]
+            order = hor_order
+        elif side == "Bottom":
+            cell = grid[-i-2][line+1]
+            order = hor_order_rev
+        elif side == "Left":
+            cell = grid[line+1][i+1]
+            order = ver_order
+        elif side == "Right":
+            cell = grid[line+1][-i-2]
+            order = ver_order_rev
+        
+        if cell count_skys(side, line)
+
+    return
 
 # I N I T I A L I Z E   G R I D - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -134,10 +165,10 @@ for i in range(size):
     grid[i+1][0] = ver_order[i]
     grid[i+1][size+1] = ver_order_rev[i]
 
-#Add letters already in grid (if any)
-if start_check == "y":
-    for i in range(len(start_numbers)):
-        grid[start_array[i][0]][start_array[i][1]] = start_numbers[i]
+# #Add letters already in grid (if any)
+# if start_check == "y":
+#     for i in range(len(start_numbers)):
+#         grid[start_array[i][0]][start_array[i][1]] = start_numbers[i]
 
 #Drawing the STARTING grid
 print("\n" + "\x1b[1;33;44m" + " STARTING GRID "  + "\x1b[0m" + "\n")
@@ -153,9 +184,9 @@ for i in range(size):
         if size == 6:
             grid[i+1][j+1] = [1, 2, 3, 4, 5, 6]
 
-if start_check == "y":
-    for i in range(len(start_numbers)):
-        grid[start_array[i][0]][start_array[i][1]] = start_numbers[i]
+# if start_check == "y":
+#     for i in range(len(start_numbers)):
+#         grid[start_array[i][0]][start_array[i][1]] = start_numbers[i]
 
 # M A I N   A L G O R I T H M - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -213,5 +244,5 @@ for i in range(size):
 
 print_grid()
 
-print(count_skys(1, 1))
+side_constraint("Top", 1)
 
