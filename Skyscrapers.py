@@ -141,7 +141,7 @@ def side_constraint(side, line):
             cell = grid[line+1][-i-2]
             order = ver_order_rev
         
-        if cell count_skys(side, line)
+        # if cell count_skys(side, line)
 
     return
 
@@ -200,7 +200,8 @@ for i in range(size):
     elif hor_order[i] == 1:
         grid[1][i+1] = size
     else:
-        remove(size, grid[1][i+1])
+        for j in range(hor_order[i] - 1):
+            remove(size, grid[j+1][i+1])
     if hor_order_rev[i] == size:
         cnt = 1
         for j in range(size):
@@ -209,7 +210,8 @@ for i in range(size):
     elif hor_order_rev[i] == 1:
         grid[-2][i+1] = size
     else:
-        remove(size, grid[-2][i+1])
+        for j in range(hor_order_rev[i] - 1):
+            remove(size, grid[-j-2][i+1])
     if ver_order[i] == size:
         cnt = 1
         for j in range(size):
@@ -218,7 +220,8 @@ for i in range(size):
     elif ver_order[i] == 1:
         grid[i+1][1] = size
     else:
-        remove(size, grid[i+1][1])
+        for j in range(ver_order[i] - 1):
+            remove(size, grid[i+1][j+1])
     if ver_order_rev[i] == size:
         cnt = 1
         for j in range(size):
@@ -227,7 +230,8 @@ for i in range(size):
     elif ver_order_rev[i] == 1:
         grid[i+1][-2] = size
     else:
-        remove(size, grid[i+1][-2])
+        for j in range(ver_order_rev[i] - 1):
+            remove(size, grid[i+1][-j-2])
 
 print_grid()
 
@@ -239,10 +243,10 @@ for i in range(size):
     for j in range(size):
         if isinstance(grid[i+1][j+1], list):
             for num in range(size):
-                if num+1 in grid[i+1][j+1]:
+                if isinstance(grid[i+1][j+1], list) and num+1 in grid[i+1][j+1]:
                     check_singles(num+1, i+1, j+1)
 
 print_grid()
 
-side_constraint("Top", 1)
+
 
