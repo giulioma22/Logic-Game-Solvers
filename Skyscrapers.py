@@ -193,40 +193,32 @@ for i in range(size):
 #Check for min and max side numbers
 for i in range(size):
     if hor_order[i] == size:
-        cnt = 1
         for j in range(size):
-            grid[j+1][i+1] = cnt
-            cnt += 1
+            grid[j+1][i+1] = j+1
     elif hor_order[i] == 1:
         grid[1][i+1] = size
     else:
         for j in range(hor_order[i] - 1):
             remove(size, grid[j+1][i+1])
     if hor_order_rev[i] == size:
-        cnt = 1
         for j in range(size):
-            grid[-j-2][i+1] = cnt
-            cnt += 1
+            grid[-j-2][i+1] = j+1
     elif hor_order_rev[i] == 1:
         grid[-2][i+1] = size
     else:
         for j in range(hor_order_rev[i] - 1):
             remove(size, grid[-j-2][i+1])
     if ver_order[i] == size:
-        cnt = 1
         for j in range(size):
-            grid[i+1][j+1] = cnt
-            cnt += 1
+            grid[i+1][j+1] = j+1
     elif ver_order[i] == 1:
         grid[i+1][1] = size
     else:
         for j in range(ver_order[i] - 1):
             remove(size, grid[i+1][j+1])
     if ver_order_rev[i] == size:
-        cnt = 1
         for j in range(size):
-            grid[i+1][-j-2] = cnt
-            cnt += 1
+            grid[i+1][-j-2] = j+1 
     elif ver_order_rev[i] == 1:
         grid[i+1][-2] = size
     else:
