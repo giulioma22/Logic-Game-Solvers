@@ -98,6 +98,7 @@ def check_singles(number, x, y):
     #Confirm single numbers
     if appears_once_horiz == True or appears_once_vert == True:
         grid[x][y] = number
+        clear_lines()
         return
     else:
         return False
