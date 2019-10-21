@@ -11,7 +11,7 @@ The goal is to put the letters A, B and C in the board.
 Each letter appears once in every row and column and you're told which letter you see first from the border.
 Since most puzzles can contain empty spaces, the hint on the border does not always match the tile next to it.
 
-## :city_sunrise: Skyscrapers - Guess Skyscrapers from the Skyline (Solved: 0) :hourglass_flowing_sand:
+## :city_sunrise: Skyscrapers - Guess Skyscrapers from the Skyline (Solved: 3) :hourglass_flowing_sand:
 
 The central grid represents a city, as seen from above. Each square contains a Skyscraper, of different height.
 The goal is to guess the height of each Skyscraper.

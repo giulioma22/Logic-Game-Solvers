@@ -1,31 +1,33 @@
 
 # I N P U T   D A T A - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-size = 4
-hor_order = [3, 2, 2, 1]
-hor_order_rev = [1, 3, 2, 2]
-ver_order = [4, 2, 3, 1]
-ver_order_rev = [1, 2, 2, 2]
+# size = 4
+# hor_order = [3, 2, 2, 1]
+# hor_order_rev = [1, 3, 2, 2]
+# ver_order = [4, 2, 3, 1]
+# ver_order_rev = [1, 2, 2, 2]
 
-# size = int(input("Enter grid SIZE: "))
-# hor_order = []
-# hor_order_rev = []
-# ver_order = []
-# ver_order_rev = []
+complete_grid = 0
 
-# #User input commands
-# print("Enter TOP-border numbers, left to right one at a time (0 if blank): ")
-# for i in range(size):    
-#     hor_order.append(int(input()))
-# print("Enter BOTTOM-border numbers, left to right: ")
-# for i in range(size):    
-#     hor_order_rev.append(int(input()))
-# print("Enter LEFT-border numbers, top to bottom: ")
-# for i in range(size):    
-#     ver_order.append(int(input()))
-# print("Enter RIGHT-border numbers, top to bottom: ")
-# for i in range(size):    
-#     ver_order_rev.append(int(input()))
+size = int(input("Enter grid SIZE: "))
+hor_order = []
+hor_order_rev = []
+ver_order = []
+ver_order_rev = []
+
+#User input commands
+print("Enter TOP-border numbers, left to right one at a time (0 if blank): ")
+for i in range(size):    
+    hor_order.append(int(input()))
+print("Enter BOTTOM-border numbers, left to right: ")
+for i in range(size):    
+    hor_order_rev.append(int(input()))
+print("Enter LEFT-border numbers, top to bottom: ")
+for i in range(size):    
+    ver_order.append(int(input()))
+print("Enter RIGHT-border numbers, top to bottom: ")
+for i in range(size):    
+    ver_order_rev.append(int(input()))
 
 # #Add numbers in starting grid
 # start_numbers = []
@@ -102,6 +104,31 @@ def check_singles(number, x, y):
         return
     else:
         return False
+
+#Copy and check if matrix did (not) change after 1 loop
+def is_same_matrix(grid_1, grid_2):
+    same_matrix = True
+    for i in range(size):
+        for j in range(size):
+            if len(grid_1[i+1][j+1]) == len(grid_2[i+1][j+1]):
+                if isinstance(grid_1[i+1][j+1], list):
+                    for k in range(letters):
+                        if grid_1[i+1][j+1][k] != grid_2[i+1][j+1][k]:
+                            grid_1[i+1][j+1][k] = grid_2[i+1][j+1][k]
+                            same_matrix = False
+                else:
+                    if grid_1[i+1][j+1] != grid_2[i+1][j+1]:
+                        grid_1[i+1][j+1] = grid_2[i+1][j+1]
+                        same_matrix = False
+            else:
+                same_matrix = False
+                if isinstance(grid_2[i+1][j+1], list):
+                    grid_1[i+1][j+1] = []
+                    for k in range(letters):
+                        grid_1[i+1][j+1].append(grid_2[i+1][j+1][k])
+                else:
+                    grid_1[i+1][j+1] = grid_2[i+1][j+1]
+    return same_matrix
 
 #Count skyscrapers and keep track of number seen
 def count_skys(side, line):
@@ -201,6 +228,8 @@ for i in range(size):
     else:
         for j in range(hor_order[i] - 1):
             remove(size, grid[j+1][i+1])
+        if hor_order[i] == size-1:
+            remove(size-1, grid[1][i+1])
     if hor_order_rev[i] == size:
         for j in range(size):
             grid[-j-2][i+1] = j+1
@@ -209,6 +238,8 @@ for i in range(size):
     else:
         for j in range(hor_order_rev[i] - 1):
             remove(size, grid[-j-2][i+1])
+        if hor_order_rev[i] == size-1:
+            remove(size-1, grid[-2][i+1])
     if ver_order[i] == size:
         for j in range(size):
             grid[i+1][j+1] = j+1
@@ -217,6 +248,8 @@ for i in range(size):
     else:
         for j in range(ver_order[i] - 1):
             remove(size, grid[i+1][j+1])
+        if ver_order[i] == size-1:
+            remove(size-1, grid[i+1][1])
     if ver_order_rev[i] == size:
         for j in range(size):
             grid[i+1][-j-2] = j+1 
@@ -225,20 +258,26 @@ for i in range(size):
     else:
         for j in range(ver_order_rev[i] - 1):
             remove(size, grid[i+1][-j-2])
+        if ver_order_rev[i] == size-1:
+            remove(size-1, grid[i+1][-2])
 
-print_grid()
+# print_grid()
 
-clear_lines()
+while complete_grid != size**2:
+    complete_grid = clear_lines()
 
-print_grid()
+    # print_grid()
 
-for i in range(size):
-    for j in range(size):
-        if isinstance(grid[i+1][j+1], list):
-            for num in range(size):
-                if isinstance(grid[i+1][j+1], list) and num+1 in grid[i+1][j+1]:
-                    check_singles(num+1, i+1, j+1)
+    for i in range(size):
+        for j in range(size):
+            if isinstance(grid[i+1][j+1], list):
+                for num in range(size):
+                    if isinstance(grid[i+1][j+1], list) and num+1 in grid[i+1][j+1]:
+                        check_singles(num+1, i+1, j+1)
 
+
+#Drawing the FINAL grid
+print("\n" + "\x1b[1;33;44m" + " FINAL GRID "  + "\x1b[0m" + "\n")
 print_grid()
 
 
