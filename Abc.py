@@ -578,7 +578,7 @@ while complete_grid != size**2 and exit_loop == False:
 # R E S U L T - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if exit_loop == True and complete_grid != size**2:
-        print("\n" + "\x1b[1;33;41m" + " ERROR: infinite loop " + "\x1b[0m")
+    print("\n" + "\x1b[1;33;41m" + " ERROR: infinite loop " + "\x1b[0m")
 
 #Drawing the FINAL grid
 print("\n" + "\x1b[1;33;44m" + " FINAL GRID " + "\x1b[0m" + "\n")

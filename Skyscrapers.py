@@ -1,33 +1,33 @@
 
 # I N P U T   D A T A - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# size = 4
-# hor_order = [3, 2, 2, 1]
-# hor_order_rev = [1, 3, 2, 2]
-# ver_order = [4, 2, 3, 1]
-# ver_order_rev = [1, 2, 2, 2]
+size = 4
+hor_order = [3, 1, 2, 2]
+hor_order_rev = [2, 3, 3, 1]
+ver_order = [2, 3, 1, 2]
+ver_order_rev = [2, 2, 3, 1]
 
 complete_grid = 0
 
-size = int(input("Enter grid SIZE: "))
-hor_order = []
-hor_order_rev = []
-ver_order = []
-ver_order_rev = []
+# size = int(input("Enter grid SIZE: "))
+# hor_order = []
+# hor_order_rev = []
+# ver_order = []
+# ver_order_rev = []
 
-#User input commands
-print("Enter TOP-border numbers, left to right one at a time (0 if blank): ")
-for i in range(size):    
-    hor_order.append(int(input()))
-print("Enter BOTTOM-border numbers, left to right: ")
-for i in range(size):    
-    hor_order_rev.append(int(input()))
-print("Enter LEFT-border numbers, top to bottom: ")
-for i in range(size):    
-    ver_order.append(int(input()))
-print("Enter RIGHT-border numbers, top to bottom: ")
-for i in range(size):    
-    ver_order_rev.append(int(input()))
+# #User input commands
+# print("Enter TOP-border numbers, left to right one at a time (0 if blank): ")
+# for i in range(size):    
+#     hor_order.append(int(input()))
+# print("Enter BOTTOM-border numbers, left to right: ")
+# for i in range(size):    
+#     hor_order_rev.append(int(input()))
+# print("Enter LEFT-border numbers, top to bottom: ")
+# for i in range(size):    
+#     ver_order.append(int(input()))
+# print("Enter RIGHT-border numbers, top to bottom: ")
+# for i in range(size):    
+#     ver_order_rev.append(int(input()))
 
 # #Add numbers in starting grid
 # start_numbers = []
@@ -51,7 +51,6 @@ for i in range(size):
 def print_grid():
     for i in range(size+2):
         print(grid[i])
-    print("\n")
     return
 
 #Remove number from cell
@@ -110,9 +109,9 @@ def is_same_matrix(grid_1, grid_2):
     same_matrix = True
     for i in range(size):
         for j in range(size):
-            if len(grid_1[i+1][j+1]) == len(grid_2[i+1][j+1]):
+            if type(grid_1[i+1][j+1]) == type(grid_2[i+1][j+1]):
                 if isinstance(grid_1[i+1][j+1], list):
-                    for k in range(letters):
+                    for k in range(size):
                         if grid_1[i+1][j+1][k] != grid_2[i+1][j+1][k]:
                             grid_1[i+1][j+1][k] = grid_2[i+1][j+1][k]
                             same_matrix = False
@@ -124,7 +123,7 @@ def is_same_matrix(grid_1, grid_2):
                 same_matrix = False
                 if isinstance(grid_2[i+1][j+1], list):
                     grid_1[i+1][j+1] = []
-                    for k in range(letters):
+                    for k in range(size):
                         grid_1[i+1][j+1].append(grid_2[i+1][j+1][k])
                 else:
                     grid_1[i+1][j+1] = grid_2[i+1][j+1]
@@ -132,59 +131,102 @@ def is_same_matrix(grid_1, grid_2):
 
 #Count skyscrapers and keep track of number seen
 def count_skys(side, line):
-    in_line = []
-    hidden = []
+    see_line = []
+    compl_line = []
+    gap_line = -1
+    idx = 0
+    high_idx = -1
     cell = 0
     for i in range(size):
         if side == "Top":
-            cell = grid[i+1][line+1]
+            idx = i+1
+            cell = grid[idx][line]
         elif side == "Bottom":
-            cell = grid[-i-2][line+1]
+            idx = -i-2
+            cell = grid[idx][line]
         elif side == "Left":
-            cell = grid[line+1][i+1]
+            idx = i+1
+            cell = grid[line][idx]
         elif side == "Right":
-            cell = grid[line+1][-i-2]
+            idx = -i-2
+            cell = grid[line][idx]
 
         if isinstance(cell, int):
-            if cell > in_line[-1]:
-                in_line.append(cell)
-            else:
-                hidden.append(cell)
-    return [in_line, hidden]
+            in_line.append(cell)
+            if cell > see_line[-1]:
+                see_line.append(cell)
+                if cell == size:
+                    gap_line = i + 1 - in_line.size()
+                    high_idx = idx
+
+    return [in_line, see_line, gap_line, high_idx]
 
 def side_constraint(side, line):
-    cell = 0
-    order = []
+
+    in_line = count_skys(side, line)[0]
+    see_line = count_skys(side, line)[1]
+    gap_line = count_skys(side, line)[2]
+    
     for i in range(size):
         if side == "Top":
-            cell = grid[i+1][line+1]
-            order = hor_order
+            idx = i+1
+            cell = grid[idx][line+1]
+            side_letter = hor_order[line+1]
         elif side == "Bottom":
-            cell = grid[-i-2][line+1]
-            order = hor_order_rev
+            idx = -i-2
+            cell = grid[idx][line+1]
+            side_letter = hor_order_rev[line+1]
         elif side == "Left":
-            cell = grid[line+1][i+1]
-            order = ver_order
+            idx = i+1
+            cell = grid[line+1][idx]
+            side_letter = ver_order[line+1]
         elif side == "Right":
-            cell = grid[line+1][-i-2]
-            order = ver_order_rev
+            idx = -i-2
+            cell = grid[line+1][idx]
+            side_letter = ver_order_rev[line+1]
+
+        if see_line == side_letter:     # If side cond is already met, break
+            break
+
+        if gap_line != -1 and gap_line >= side_letter:  # Highest number in line
+            
+        else:
+            break
         
-        # if cell count_skys(side, line)
+        #N.B. If the sum of 2 opposite numbers is size+1, highest number
+        #is at distance side_number from that side
+        #Pseudo-code
+        # if count_skys == side_number:
+        #     skip
+
+        # if highest_number in line and gap >= side_number:
+        #     for j in range(size):
+        #         if size-j not in line:
+        #             if size-j == size - 1:
+
+        # if gap == side_number-1 on both sides:
+        #     skip
+
+        # # #
 
     return
 
 # I N I T I A L I Z E   G R I D - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 grid = []
+last_grid = []
 
 #Create the playing grid
 for i in range(size+2):
     grid.append([])
+    last_grid.append([])
     for j in range(size+2):
         if i != 0 and i != size+1 and j != 0 and j != size+1:
             grid[i].append("_")
+            last_grid[i].append("_")
         else:
             grid[i].append("/")
+            last_grid[i].append("/")
 
 #Add side letters
 for i in range(size):
@@ -199,7 +241,7 @@ for i in range(size):
 #         grid[start_array[i][0]][start_array[i][1]] = start_numbers[i]
 
 #Drawing the STARTING grid
-print("\n" + "\x1b[1;33;44m" + " STARTING GRID "  + "\x1b[0m" + "\n")
+print("\n\x1b[1;33;44m" + " STARTING GRID " + "\x1b[0m\n")
 print_grid()
 
 #Fill cells with all-letters array
@@ -263,10 +305,10 @@ for i in range(size):
 
 # print_grid()
 
-while complete_grid != size**2:
-    complete_grid = clear_lines()
+same_grid = False
 
-    # print_grid()
+while complete_grid != size**2 and same_grid == False:
+    complete_grid = clear_lines()
 
     for i in range(size):
         for j in range(size):
@@ -275,10 +317,14 @@ while complete_grid != size**2:
                     if isinstance(grid[i+1][j+1], list) and num+1 in grid[i+1][j+1]:
                         check_singles(num+1, i+1, j+1)
 
+    if is_same_matrix(last_grid, grid):
+        same_grid = True
 
-#Drawing the FINAL grid
-print("\n" + "\x1b[1;33;44m" + " FINAL GRID "  + "\x1b[0m" + "\n")
+    # print_grid()
+
+if same_grid:
+    print("\n\x1b[1;33;41m" + " ERROR: infinite loop " + "\x1b[0m\n")
+else:
+    #Drawing the FINAL grid
+    print("\n\x1b[1;33;44m" + " FINAL GRID " + "\x1b[0m\n")
 print_grid()
-
-
-
