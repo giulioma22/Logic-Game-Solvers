@@ -48,9 +48,12 @@ complete_grid = 0
 # F U N C T I O N S - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 #Print grid
-def print_grid():
+def print_grid(message = ""):
+    if message != "":
+        print(message + "\n")
     for i in range(size+2):
         print(grid[i])
+    print("\n")
     return
 
 #Remove number from cell
@@ -104,6 +107,14 @@ def check_singles(number, x, y):
     else:
         return False
 
+def ultimate_check_singles():
+    for i in range(size):
+        for j in range(size):
+            for num in range(size):
+                if isinstance(grid[i+1][j+1], list) and num+1 in grid[i+1][j+1]:
+                    check_singles(num+1, i+1, j+1)
+    return
+
 #Copy and check if matrix did (not) change after 1 loop
 def is_same_matrix(grid_1, grid_2):
     same_matrix = True
@@ -132,64 +143,73 @@ def is_same_matrix(grid_1, grid_2):
 #Count skyscrapers and keep track of number seen
 def count_skys(side, line):
     see_line = []
-    compl_line = []
+    in_line = []
     gap_line = -1
     idx = 0
     high_idx = -1
+    remain_line = []
     cell = 0
     for i in range(size):
         if side == "Top":
             idx = i+1
-            cell = grid[idx][line]
+            cell = grid[idx][line+1]
         elif side == "Bottom":
             idx = -i-2
-            cell = grid[idx][line]
+            cell = grid[idx][line+1]
         elif side == "Left":
             idx = i+1
-            cell = grid[line][idx]
+            cell = grid[line+1][idx]
         elif side == "Right":
             idx = -i-2
-            cell = grid[line][idx]
+            cell = grid[line+1][idx]
 
         if isinstance(cell, int):
             in_line.append(cell)
-            if cell > see_line[-1]:
+            if see_line == [] or cell > see_line[-1]:
                 see_line.append(cell)
                 if cell == size:
-                    gap_line = i + 1 - in_line.size()
+                    gap_line = i + 1 - len(in_line)
                     high_idx = idx
+        
+        remain_line = [i+1 for i in range(size) if i+1 not in in_line]
 
-    return [in_line, see_line, gap_line, high_idx]
+    return in_line, see_line, gap_line, high_idx, remain_line
 
 def side_constraint(side, line):
-
-    in_line = count_skys(side, line)[0]
-    see_line = count_skys(side, line)[1]
-    gap_line = count_skys(side, line)[2]
     
     for i in range(size):
-        if side == "Top":
-            idx = i+1
-            cell = grid[idx][line+1]
-            side_letter = hor_order[line+1]
-        elif side == "Bottom":
-            idx = -i-2
-            cell = grid[idx][line+1]
-            side_letter = hor_order_rev[line+1]
-        elif side == "Left":
-            idx = i+1
-            cell = grid[line+1][idx]
-            side_letter = ver_order[line+1]
-        elif side == "Right":
-            idx = -i-2
-            cell = grid[line+1][idx]
-            side_letter = ver_order_rev[line+1]
 
-        if see_line == side_letter:     # If side cond is already met, break
+        in_line, see_line, gap_line, high_idx, remain_line = count_skys(side, line)
+
+        if high_idx == -1:     # For now, break if highest number not in line
             break
 
-        if gap_line != -1 and gap_line >= side_letter:  # Highest number in line
-            
+        if side == "Top":
+            row = high_idx-i-1
+            column = line+1
+            side_letter = hor_order[line]
+        elif side == "Bottom":
+            row = high_idx+i+1
+            column = line+1
+            side_letter = hor_order_rev[line]
+        elif side == "Left":
+            row = line+1
+            column = high_idx-i-1
+            side_letter = ver_order[line]
+        elif side == "Right":
+            row = line+1
+            column = high_idx+i+1
+            side_letter = ver_order_rev[line]
+
+        if len(see_line) == side_letter:     # If side cond is already met, break
+            break
+
+        if gap_line != -1 and gap_line >= side_letter:  # Highest number in line          
+            for j in range(size):    # Missing numbers in line
+                if size - j not in in_line:
+                    remove(size - j, grid[row][column])
+                    ultimate_check_singles()
+                    return
         else:
             break
         
@@ -303,24 +323,26 @@ for i in range(size):
         if ver_order_rev[i] == size-1:
             remove(size-1, grid[i+1][-2])
 
-# print_grid()
+# print_grid("End initialization")
 
 same_grid = False
 
 while complete_grid != size**2 and same_grid == False:
-    complete_grid = clear_lines()
+   
+    ultimate_check_singles()
+    # print_grid("New loop")
 
     for i in range(size):
-        for j in range(size):
-            if isinstance(grid[i+1][j+1], list):
-                for num in range(size):
-                    if isinstance(grid[i+1][j+1], list) and num+1 in grid[i+1][j+1]:
-                        check_singles(num+1, i+1, j+1)
+        side_constraint("Top", i)
+        side_constraint("Bottom", i)
+        side_constraint("Left", i)
+        side_constraint("Right", i)
 
     if is_same_matrix(last_grid, grid):
         same_grid = True
 
-    # print_grid()
+    complete_grid = clear_lines()
+    # print_grid("End loop")
 
 if same_grid:
     print("\n\x1b[1;33;41m" + " ERROR: infinite loop " + "\x1b[0m\n")
