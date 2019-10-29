@@ -142,13 +142,11 @@ def is_same_matrix(grid_1, grid_2):
 
 #Count skyscrapers and keep track of number seen
 def count_skys(side, line):
-    see_line = []
     in_line = []
-    gap_line = -1
-    idx = 0
+    see_line = []
     high_idx = -1
     remain_line = []
-    cell = 0
+    next_empty = 0
     for i in range(size):
         if side == "Top":
             idx = i+1
@@ -168,18 +166,20 @@ def count_skys(side, line):
             if see_line == [] or cell > see_line[-1]:
                 see_line.append(cell)
                 if cell == size:
-                    gap_line = i + 1 - len(in_line)
                     high_idx = idx
+        if in_line == []:   # If I haven't seen any number, it's an empty space
+            next_empty += 1
         
         remain_line = [i+1 for i in range(size) if i+1 not in in_line]
 
-    return in_line, see_line, gap_line, high_idx, remain_line
+    return in_line, see_line, high_idx, remain_line, next_empty
 
 def side_constraint(side, line):
     
     for i in range(size):
 
-        in_line, see_line, gap_line, high_idx, remain_line = count_skys(side, line)
+        in_line, see_line, high_idx, remain_line, next_empty = count_skys(side, line)
+        all_empty = size - len(in_line)     # Number of empty cells
 
         if high_idx == -1:     # For now, break if highest number not in line
             break
@@ -204,12 +204,14 @@ def side_constraint(side, line):
         if len(see_line) == side_letter:     # If side cond is already met, break
             break
 
-        if gap_line != -1 and gap_line >= side_letter:  # Highest number in line          
+        if high_idx != -1 and all_empty >= side_letter:  # Highest number in line          
             for j in range(size):    # Missing numbers in line
                 if size - j not in in_line:
                     remove(size - j, grid[row][column])
                     ultimate_check_singles()
                     return
+        # elif next_empty == all_empty:
+        #     if side_letter > 
         else:
             break
         
