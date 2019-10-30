@@ -11,6 +11,11 @@ The goal is to put the letters A, B and C in the board.
 Each letter appears once in every row and column and you're told which letter you see first from the border.
 Since most puzzles can contain empty spaces, the hint on the border does not always match the tile next to it.
 
+<details>
+  <summary>Example</summary>
+  ![ABC Example](C:\Users\giuli\OneDrive\Desktop\ABC_empty.png)		![ABC Example](C:\Users\giuli\OneDrive\Desktop\ABC_solved.png)
+</details>
+
 ## :city_sunrise: Skyscrapers - Guess Skyscrapers from the Skyline (Solved: 6/30) :hourglass_flowing_sand:
 
 The central grid represents a city, as seen from above. Each square contains a Skyscraper, of different height.
