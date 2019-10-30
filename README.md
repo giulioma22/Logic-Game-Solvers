@@ -11,10 +11,12 @@ The goal is to put the letters A, B and C in the board.
 Each letter appears once in every row and column and you're told which letter you see first from the border.
 Since most puzzles can contain empty spaces, the hint on the border does not always match the tile next to it.
 
+### Example
+
 <details>
-  <summary>ABC - Example</summary>
-  ![ABC_Empty Example](/Example_Images/ABC_empty.png)
-  ![ABC_Solved Example](/Example_Images/ABC_solved.png)
+  <summary>Show</summary>
+    <img src = "Examples/ABC_empty.png" width = "300">
+    <img src = "Examples/ABC_solved.png" width = "300">
 </details>
 
 ## :city_sunrise: Skyscrapers - Guess Skyscrapers from the Skyline (Solved: 6/30) :hourglass_flowing_sand:
@@ -28,3 +30,10 @@ Skyscrapers height ranges from 1 to the size of the city. Each row and column ca
 Outside the city, on the borders, the nunmbers indicate the Skyline, which tells you how many Skyscrapers you can see from that side.
 Keep in mind that a higher Skyscraper hides a lower one; also harder levels can hide some numbers.
 
+### Example
+
+<details>
+  <summary>Show</summary>
+    <img src = "Examples/Skyscrapers_empty.png" width = "300">
+    <img src = "Examples/Skyscrapers_solved.png" width = "300">
+</details>
