@@ -1,49 +1,53 @@
 
 # I N P U T   D A T A - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# size = 4
-# hor_order = [3, 1, 0, 2]
-# hor_order_rev = [1, 3, 0, 2]
-# ver_order = [0, 3, 0, 0]
-# ver_order_rev = [0, 0, 2, 0]
-
+# Has to be False to ask for input (true will run example)
+runExample = False
 complete_grid = 0
 
-size = int(input("Enter grid SIZE: "))
-hor_order = []
-hor_order_rev = []
-ver_order = []
-ver_order_rev = []
+if runExample:
+    # Grid 7
+    size = 4
+    hor_order = [2, 2, 0, 0]
+    hor_order_rev = [0, 0, 1, 0]
+    ver_order = [0, 2, 1, 2]
+    ver_order_rev = [1, 0, 2, 0]
+else:
+    size = int(input("Enter grid SIZE: "))
+    hor_order = []
+    hor_order_rev = []
+    ver_order = []
+    ver_order_rev = []
 
-# User input commands
-print("Enter TOP-border numbers, left to right one at a time (0 if blank): ")
-for i in range(size):    
-    hor_order.append(int(input()))
-print("Enter BOTTOM-border numbers, left to right: ")
-for i in range(size):    
-    hor_order_rev.append(int(input()))
-print("Enter LEFT-border numbers, top to bottom: ")
-for i in range(size):    
-    ver_order.append(int(input()))
-print("Enter RIGHT-border numbers, top to bottom: ")
-for i in range(size):    
-    ver_order_rev.append(int(input()))
+    # User input commands
+    print("Enter TOP-border numbers, left to right one at a time (0 if blank): ")
+    for i in range(size):    
+        hor_order.append(int(input()))
+    print("Enter BOTTOM-border numbers, left to right: ")
+    for i in range(size):    
+        hor_order_rev.append(int(input()))
+    print("Enter LEFT-border numbers, top to bottom: ")
+    for i in range(size):    
+        ver_order.append(int(input()))
+    print("Enter RIGHT-border numbers, top to bottom: ")
+    for i in range(size):    
+        ver_order_rev.append(int(input()))
 
-# Add numbers in starting grid
-start_numbers = []
-start_array = []
-start_check = str(input("Any number already in the grid? y/n "))
-while start_check != "y" and start_check != "n":
-    print("Invalid input: press 'y' if yes, 'n' if not")
+    # Add numbers in starting grid
+    start_numbers = []
+    start_array = []
     start_check = str(input("Any number already in the grid? y/n "))
-if start_check == "y":
-    n_already = int(input("How many numbers already in grid? "))
-    for i in range (n_already):
-        num = int(input("Enter number: "))
-        start_numbers.append(num)
-        row = int(input("In which row? "))
-        clm = int(input("In which column? "))
-        start_array.append([row, clm])
+    while start_check != "y" and start_check != "n":
+        print("Invalid input: press 'y' if yes, 'n' if not")
+        start_check = str(input("Any number already in the grid? y/n "))
+    if start_check == "y":
+        n_already = int(input("How many numbers already in grid? "))
+        for i in range (n_already):
+            num = int(input("Enter number: "))
+            start_numbers.append(num)
+            row = int(input("In which row? "))
+            clm = int(input("In which column? "))
+            start_array.append([row, clm])
 
 # F U N C T I O N S - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -190,55 +194,63 @@ def count_skys(side, line):
 
 # Adding/removing numbers based on side letters
 def side_constraint(side, line):
-    
-    for i in range(size):
 
-        in_line, see_line, high_idx, remain_line, next_empty = count_skys(side, line)
-        all_empty = size - len(in_line)     # Number of empty cells
+    in_line, see_line, high_idx, remain_line, next_empty = count_skys(side, line)
+    all_empty = size - len(in_line)     # Number of empty cells
 
-        if high_idx == -1:     # For now, break if highest number not in line
-            break
+    if high_idx == -1:     # For now, break if highest number not in line
+        return
 
-        if side == "Top":
-            row_before = high_idx-i-1
-            row_first = 1
-            column_before = column_first = line+1
-            side_letter = hor_order[line]
-        elif side == "Bottom":
-            row_before = high_idx+i+1
-            row_first = -2
-            column_before = column_first = line+1
-            side_letter = hor_order_rev[line]
-        elif side == "Left":
-            row_before = row_first = line+1
-            column_before = high_idx-i-1
-            column_first = 1
-            side_letter = ver_order[line]
-        elif side == "Right":
-            row_before = row_first = line+1
-            column_before = high_idx+i+1
-            column_first = -2
-            side_letter = ver_order_rev[line]
+    if side == "Top":
+        row_before = high_idx-1
+        row_first = 1
+        column_before = column_first = line+1
+        side_letter = hor_order[line]
+    elif side == "Bottom":
+        row_before = high_idx+1
+        row_first = -2
+        column_before = column_first = line+1
+        side_letter = hor_order_rev[line]
+    elif side == "Left":
+        row_before = row_first = line+1
+        column_before = high_idx-1
+        column_first = 1
+        side_letter = ver_order[line]
+    elif side == "Right":
+        row_before = row_first = line+1
+        column_before = high_idx+1
+        column_first = -2
+        side_letter = ver_order_rev[line]
 
-        if side_letter == 0:    # Break if no side letter
-            break
+    if side_letter == 0:    # Break if no side letter
+        return
 
-        if len(see_line) == side_letter and next_empty == 0:     # If side cond is already met, break
-            break
+    if len(see_line) == side_letter and next_empty == 0:     # If side cond is already met, break
+        return
 
-        if next_empty == all_empty != 0:   # All number missing are visible
-            if side_letter - len(see_line) == next_empty:    # When missing as many skyscr as empty visible cells
-                for j in range(size):
-                    if size - j not in in_line:
-                        grid[row_before][column_before] = remain_line[-1]
-            elif side_letter - len(see_line) == 1:  # When missing only one skyscr
-                grid[row_first][column_first] = remain_line[-1]
-        
-        if next_empty > 0 and side_letter == len(see_line):
+    # All number missing are visible
+    if next_empty == all_empty != 0:
+        # When missing as many skyscr as empty visible cells
+        if side_letter - len(see_line) == next_empty:
+            grid[row_before][column_before] = remain_line[-1]
+        # When missing only one skyscr add to closest
+        elif side_letter - len(see_line) == 1:
             grid[row_first][column_first] = remain_line[-1]
-        
-        # N.B. If the sum of 2 opposite numbers is size+1, highest number
-        # is at distance side_number from that side
+    
+    # NOT all number missing are visible: remove highest from furthest
+    elif all_empty != next_empty and side_letter - len(see_line) < next_empty and next_empty != 1:
+        for j in range(size):
+            if size - j not in in_line:
+                remove(size - j, grid[row_before][column_before])
+                ultimate_check_singles()
+                break
+
+    # When I already have skyline, but still have empty cells in sight
+    if next_empty > 0 and side_letter == len(see_line):
+        grid[row_first][column_first] = remain_line[-1]
+    
+    # N.B. If the sum of 2 opposite numbers is size+1, highest number
+    # is at distance side_number from that side
 
     return
 
