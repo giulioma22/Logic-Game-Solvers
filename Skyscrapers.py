@@ -6,12 +6,19 @@ runExample = False
 complete_grid = 0
 
 if runExample:
-    # Grid 7
+    # Grid 8
     size = 4
-    hor_order = [2, 2, 0, 0]
-    hor_order_rev = [0, 0, 1, 0]
-    ver_order = [0, 2, 1, 2]
-    ver_order_rev = [1, 0, 2, 0]
+    hor_order = [0, 0, 3, 0]
+    hor_order_rev = [0, 1, 0, 3]
+    ver_order = [0, 3, 2, 2]
+    ver_order_rev = [0, 0, 2, 0]
+
+    # # Grid 10
+    # size = 5
+    # hor_order = [2, 3, 3, 1, 2]
+    # hor_order_rev = [3, 1, 2, 3, 3]
+    # ver_order = [3, 1, 2, 3, 2]
+    # ver_order_rev = [2, 4, 1, 3, 4]
 else:
     size = int(input("Enter grid SIZE: "))
     hor_order = []
@@ -63,7 +70,7 @@ def print_grid(message = ""):
 # Remove number from cell
 def remove(number, cell):
     if isinstance(cell, list) and number in cell:
-        cell[cell.index(number)] = "_"
+        cell[cell.index(number)] = 0
     return
 
 # Clear lines
@@ -231,19 +238,26 @@ def side_constraint(side, line):
     # All number missing are visible
     if next_empty == all_empty != 0:
         # When missing as many skyscr as empty visible cells
-        if side_letter - len(see_line) == next_empty:
+        if side_letter - len(see_line) == next_empty and isinstance(grid[row_before][column_before], list):
             grid[row_before][column_before] = remain_line[-1]
         # When missing only one skyscr add to closest
-        elif side_letter - len(see_line) == 1:
+        elif side_letter - len(see_line) == 1  and isinstance(grid[row_before][column_before], list):
             grid[row_first][column_first] = remain_line[-1]
     
     # NOT all number missing are visible: remove highest from furthest
     elif all_empty != next_empty and side_letter - len(see_line) < next_empty and next_empty != 1:
         for j in range(size):
             if size - j not in in_line:
+                # To not see immediately a 1 when missing just one skyscr
+                if side_letter - len(see_line) == 1:
+                    remove(1, grid[row_first][column_first])
                 remove(size - j, grid[row_before][column_before])
                 ultimate_check_singles()
                 break
+
+    elif all_empty != next_empty and side_letter - len(see_line)== next_empty and next_empty != 1:
+        remove(1, grid[row_before][column_before])
+        ultimate_check_singles()
 
     # When I already have skyline, but still have empty cells in sight
     if next_empty > 0 and side_letter == len(see_line):
@@ -265,11 +279,11 @@ for i in range(size+2):
     last_grid.append([])
     for j in range(size+2):
         if i != 0 and i != size+1 and j != 0 and j != size+1:
-            grid[i].append("_")
-            last_grid[i].append("_")
+            grid[i].append(0)
+            last_grid[i].append(0)
         else:
-            grid[i].append("/")
-            last_grid[i].append("/")
+            grid[i].append(0)
+            last_grid[i].append(0)
 
 # Add side letters
 for i in range(size):
