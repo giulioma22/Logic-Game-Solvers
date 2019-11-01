@@ -19,7 +19,7 @@ Since most puzzles can contain empty spaces, the hint on the border does not alw
     <img src = "Examples/ABC_solved.png" width = "300">
 </details>
 
-## :city_sunrise: Skyscrapers - Guess Skyscrapers from the Skyline (Solved: 9/30) :hourglass_flowing_sand:
+## :city_sunrise: Skyscrapers - Guess Skyscrapers from the Skyline (Solved: 12/30) :hourglass_flowing_sand:
 
 The central grid represents a city, as seen from above. Each square contains a Skyscraper, of different height.
 The goal is to guess the height of each Skyscraper.

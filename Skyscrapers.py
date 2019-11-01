@@ -6,19 +6,19 @@ runExample = False
 complete_grid = 0
 
 if runExample:
-    # Grid 8
-    size = 4
-    hor_order = [0, 0, 3, 0]
-    hor_order_rev = [0, 1, 0, 3]
-    ver_order = [0, 3, 2, 2]
-    ver_order_rev = [0, 0, 2, 0]
-
-    # # Grid 10
+    # # Grid 13
     # size = 5
-    # hor_order = [2, 3, 3, 1, 2]
-    # hor_order_rev = [3, 1, 2, 3, 3]
-    # ver_order = [3, 1, 2, 3, 2]
-    # ver_order_rev = [2, 4, 1, 3, 4]
+    # hor_order = [4, 0, 0, 1, 0]
+    # hor_order_rev = [0, 0, 0, 2, 4]
+    # ver_order = [0, 3, 2, 1, 0]
+    # ver_order_rev = [2, 1, 2, 3, 3]
+
+    # Grid 10
+    size = 5
+    hor_order = [2, 3, 3, 1, 2]
+    hor_order_rev = [3, 1, 2, 3, 3]
+    ver_order = [3, 1, 2, 3, 2]
+    ver_order_rev = [2, 4, 1, 3, 4]
 else:
     size = int(input("Enter grid SIZE: "))
     hor_order = []
@@ -70,7 +70,7 @@ def print_grid(message = ""):
 # Remove number from cell
 def remove(number, cell):
     if isinstance(cell, list) and number in cell:
-        cell[cell.index(number)] = 0
+        cell[cell.index(number)] = "_"
     return
 
 # Clear lines
@@ -212,21 +212,29 @@ def side_constraint(side, line):
         row_before = high_idx-1
         row_first = 1
         column_before = column_first = line+1
+        row_mult = 1
+        col_mult = 0
         side_letter = hor_order[line]
     elif side == "Bottom":
         row_before = high_idx+1
         row_first = -2
         column_before = column_first = line+1
+        row_mult = -1
+        col_mult = 0
         side_letter = hor_order_rev[line]
     elif side == "Left":
         row_before = row_first = line+1
         column_before = high_idx-1
         column_first = 1
+        row_mult = 0
+        col_mult = 1
         side_letter = ver_order[line]
     elif side == "Right":
         row_before = row_first = line+1
         column_before = high_idx+1
         column_first = -2
+        row_mult = 0
+        col_mult = -1
         side_letter = ver_order_rev[line]
 
     if side_letter == 0:    # Break if no side letter
@@ -236,14 +244,20 @@ def side_constraint(side, line):
         return
 
     # All number missing are visible
-    if next_empty == all_empty != 0:
-        # When missing as many skyscr as empty visible cells
-        if side_letter - len(see_line) == next_empty and isinstance(grid[row_before][column_before], list):
-            grid[row_before][column_before] = remain_line[-1]
-        # When missing only one skyscr add to closest
-        elif side_letter - len(see_line) == 1  and isinstance(grid[row_before][column_before], list):
+    if next_empty == all_empty > 0:
+        # When missing as many skyscr as empty visible cells or just miss 1 but some skyscr will be covered
+        if side_letter - len(see_line) == next_empty or (side_letter - len(see_line) == 1 and not all(see_line[0] > n for n in remain_line)):
+            remain_idx = 0
+            for i in range(size):
+                if isinstance(grid[row_first + i*row_mult][column_first + i*col_mult], list): 
+                    grid[row_first + i*row_mult][column_first + i*col_mult] = remain_line[remain_idx]
+                    remain_idx += 1
+                if remain_idx == len(remain_line):
+                    break
+        # When missing only one skyscr, add to closest
+        elif side_letter - len(see_line) == 1 and all(see_line[0] > n for n in remain_line):
             grid[row_first][column_first] = remain_line[-1]
-    
+
     # NOT all number missing are visible: remove highest from furthest
     elif all_empty != next_empty and side_letter - len(see_line) < next_empty and next_empty != 1:
         for j in range(size):
@@ -254,10 +268,14 @@ def side_constraint(side, line):
                 remove(size - j, grid[row_before][column_before])
                 ultimate_check_singles()
                 break
-
-    elif all_empty != next_empty and side_letter - len(see_line)== next_empty and next_empty != 1:
-        remove(1, grid[row_before][column_before])
-        ultimate_check_singles()
+    
+    # Not cover a 1 when we need to see all next empty spaces
+    elif all_empty != next_empty and side_letter - len(see_line) == next_empty and next_empty != 1:
+        for i in range(size):
+            if isinstance(grid[row_before - i*row_mult][column_before - i*col_mult], list):            
+                remove(1, grid[row_before - i*row_mult][column_before - i*col_mult])
+                ultimate_check_singles()
+                break
 
     # When I already have skyline, but still have empty cells in sight
     if next_empty > 0 and side_letter == len(see_line):
@@ -292,10 +310,10 @@ for i in range(size):
     grid[i+1][0] = ver_order[i]
     grid[i+1][size+1] = ver_order_rev[i]
 
-# # Add letters already in grid (if any)
-# if start_check == "y":
-#     for i in range(len(start_numbers)):
-#         grid[start_array[i][0]][start_array[i][1]] = start_numbers[i]
+# Add letters already in grid (if any)
+if not runExample and start_check == "y":
+    for i in range(len(start_numbers)):
+        grid[start_array[i][0]][start_array[i][1]] = start_numbers[i]
 
 # Drawing the STARTING grid
 print_grid("\n\x1b[1;33;44m" + " STARTING GRID " + "\x1b[0m")
@@ -310,9 +328,9 @@ for i in range(size):
         if size == 6:
             grid[i+1][j+1] = [1, 2, 3, 4, 5, 6]
 
-# if start_check == "y":
-#     for i in range(len(start_numbers)):
-#         grid[start_array[i][0]][start_array[i][1]] = start_numbers[i]
+if not runExample and start_check == "y":
+    for i in range(len(start_numbers)):
+        grid[start_array[i][0]][start_array[i][1]] = start_numbers[i]
 
 # M A I N   A L G O R I T H M - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -324,10 +342,12 @@ for i in range(size):
     elif hor_order[i] == 1:
         grid[1][i+1] = size
     else:
-        for j in range(hor_order[i] - 1):
-            remove(size, grid[j+1][i+1])
-        if hor_order[i] == size-1:
-            remove(size-1, grid[1][i+1])
+        # Depth removal
+        for j in range(hor_order[i] - 1):      # Loop for cell
+            for k in range(size):   # Loop for numbers to remove
+                if not hor_order[i] > k + (j + 1):
+                    break
+                remove(size-k, grid[j+1][i+1])
     # print_grid("Part 1")
     if hor_order_rev[i] == size:
         for j in range(size):
@@ -336,9 +356,10 @@ for i in range(size):
         grid[-2][i+1] = size
     else:
         for j in range(hor_order_rev[i] - 1):
-            remove(size, grid[-j-2][i+1])
-        if hor_order_rev[i] == size-1:
-            remove(size-1, grid[-2][i+1])
+            for k in range(size):   # Loop for numbers to remove
+                if not hor_order_rev[i] > k + (j+1):
+                    break
+                remove(size-k, grid[-j-2][i+1])
     # print_grid("Part 2")
     if ver_order[i] == size:
         for j in range(size):
@@ -347,9 +368,10 @@ for i in range(size):
         grid[i+1][1] = size
     else:
         for j in range(ver_order[i] - 1):
-            remove(size, grid[i+1][j+1])
-        if ver_order[i] == size-1:
-            remove(size-1, grid[i+1][1])
+            for k in range(size):   # Loop for numbers to remove
+                if not ver_order[i] > k + (j+1):
+                    break
+                remove(size-k, grid[i+1][j+1])
     # print_grid("Part 3")
     if ver_order_rev[i] == size:
         for j in range(size):
@@ -358,9 +380,10 @@ for i in range(size):
         grid[i+1][-2] = size
     else:
         for j in range(ver_order_rev[i] - 1):
-            remove(size, grid[i+1][-j-2])
-        if ver_order_rev[i] == size-1:
-            remove(size-1, grid[i+1][-2])
+            for k in range(size):   # Loop for numbers to remove
+                if not ver_order_rev[i] > k + (j+1):
+                    break
+                remove(size-k, grid[i+1][-j-2])
     # print_grid("Part 4")
 
 # print_grid("End initialization")
