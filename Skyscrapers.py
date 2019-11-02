@@ -2,23 +2,23 @@
 # I N P U T   D A T A - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Has to be False to ask for input (true will run example)
-runExample = False
+runExample = True
 complete_grid = 0
 
 if runExample:
-    # # Grid 13
-    # size = 5
-    # hor_order = [4, 0, 0, 1, 0]
-    # hor_order_rev = [0, 0, 0, 2, 4]
-    # ver_order = [0, 3, 2, 1, 0]
-    # ver_order_rev = [2, 1, 2, 3, 3]
-
-    # Grid 10
+    # Grid 13
     size = 5
-    hor_order = [2, 3, 3, 1, 2]
-    hor_order_rev = [3, 1, 2, 3, 3]
-    ver_order = [3, 1, 2, 3, 2]
-    ver_order_rev = [2, 4, 1, 3, 4]
+    hor_order = [4, 0, 0, 1, 0]
+    hor_order_rev = [0, 0, 0, 2, 4]
+    ver_order = [0, 3, 2, 1, 0]
+    ver_order_rev = [2, 1, 2, 3, 3]
+
+    # # Grid 10
+    # size = 5
+    # hor_order = [2, 3, 3, 1, 2]
+    # hor_order_rev = [3, 1, 2, 3, 3]
+    # ver_order = [3, 1, 2, 3, 2]
+    # ver_order_rev = [2, 4, 1, 3, 4]
 else:
     size = int(input("Enter grid SIZE: "))
     hor_order = []
@@ -86,6 +86,60 @@ def clear_lines():
                     if isinstance(grid[i+1][k+1], list) and grid[i+1][j+1] in grid[i+1][k+1]:
                         remove(grid[i+1][j+1], grid[i+1][k+1])
     return complete_grid
+
+# Check for initial min and max side numbers
+def initial_constraints():
+    for i in range(size):
+        if hor_order[i] == size:
+            for j in range(size):
+                grid[j+1][i+1] = j+1
+        elif hor_order[i] == 1:
+            grid[1][i+1] = size
+        else:
+            # Depth removal
+            for j in range(hor_order[i] - 1):      # Loop for cell
+                for k in range(size):   # Loop for numbers to remove
+                    if not hor_order[i] > k + (j + 1):
+                        break
+                    remove(size-k, grid[j+1][i+1])
+        # print_grid("Part 1")
+        if hor_order_rev[i] == size:
+            for j in range(size):
+                grid[-j-2][i+1] = j+1
+        elif hor_order_rev[i] == 1:
+            grid[-2][i+1] = size
+        else:
+            for j in range(hor_order_rev[i] - 1):
+                for k in range(size):   # Loop for numbers to remove
+                    if not hor_order_rev[i] > k + (j+1):
+                        break
+                    remove(size-k, grid[-j-2][i+1])
+        # print_grid("Part 2")
+        if ver_order[i] == size:
+            for j in range(size):
+                grid[i+1][j+1] = j+1
+        elif ver_order[i] == 1:
+            grid[i+1][1] = size
+        else:
+            for j in range(ver_order[i] - 1):
+                for k in range(size):   # Loop for numbers to remove
+                    if not ver_order[i] > k + (j+1):
+                        break
+                    remove(size-k, grid[i+1][j+1])
+        # print_grid("Part 3")
+        if ver_order_rev[i] == size:
+            for j in range(size):
+                grid[i+1][-j-2] = j+1 
+        elif ver_order_rev[i] == 1:
+            grid[i+1][-2] = size
+        else:
+            for j in range(ver_order_rev[i] - 1):
+                for k in range(size):   # Loop for numbers to remove
+                    if not ver_order_rev[i] > k + (j+1):
+                        break
+                    remove(size-k, grid[i+1][-j-2])
+        # print_grid("Part 4")
+    return
 
 # Check and confirm single numbers
 def check_singles(number, x, y):
@@ -280,9 +334,6 @@ def side_constraint(side, line):
     # When I already have skyline, but still have empty cells in sight
     if next_empty > 0 and side_letter == len(see_line):
         grid[row_first][column_first] = remain_line[-1]
-    
-    # N.B. If the sum of 2 opposite numbers is size+1, highest number
-    # is at distance side_number from that side
 
     return
 
@@ -334,57 +385,7 @@ if not runExample and start_check == "y":
 
 # M A I N   A L G O R I T H M - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Check for min and max side numbers
-for i in range(size):
-    if hor_order[i] == size:
-        for j in range(size):
-            grid[j+1][i+1] = j+1
-    elif hor_order[i] == 1:
-        grid[1][i+1] = size
-    else:
-        # Depth removal
-        for j in range(hor_order[i] - 1):      # Loop for cell
-            for k in range(size):   # Loop for numbers to remove
-                if not hor_order[i] > k + (j + 1):
-                    break
-                remove(size-k, grid[j+1][i+1])
-    # print_grid("Part 1")
-    if hor_order_rev[i] == size:
-        for j in range(size):
-            grid[-j-2][i+1] = j+1
-    elif hor_order_rev[i] == 1:
-        grid[-2][i+1] = size
-    else:
-        for j in range(hor_order_rev[i] - 1):
-            for k in range(size):   # Loop for numbers to remove
-                if not hor_order_rev[i] > k + (j+1):
-                    break
-                remove(size-k, grid[-j-2][i+1])
-    # print_grid("Part 2")
-    if ver_order[i] == size:
-        for j in range(size):
-            grid[i+1][j+1] = j+1
-    elif ver_order[i] == 1:
-        grid[i+1][1] = size
-    else:
-        for j in range(ver_order[i] - 1):
-            for k in range(size):   # Loop for numbers to remove
-                if not ver_order[i] > k + (j+1):
-                    break
-                remove(size-k, grid[i+1][j+1])
-    # print_grid("Part 3")
-    if ver_order_rev[i] == size:
-        for j in range(size):
-            grid[i+1][-j-2] = j+1 
-    elif ver_order_rev[i] == 1:
-        grid[i+1][-2] = size
-    else:
-        for j in range(ver_order_rev[i] - 1):
-            for k in range(size):   # Loop for numbers to remove
-                if not ver_order_rev[i] > k + (j+1):
-                    break
-                remove(size-k, grid[i+1][-j-2])
-    # print_grid("Part 4")
+initial_constraints()
 
 # print_grid("End initialization")
 
