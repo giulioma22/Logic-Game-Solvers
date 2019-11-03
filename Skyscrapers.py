@@ -2,7 +2,7 @@
 # I N P U T   D A T A - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Has to be False to ask for input (true will run example)
-runExample = True
+runExample = False
 complete_grid = 0
 
 if runExample:
@@ -294,13 +294,26 @@ def side_constraint(side, line):
     if side_letter == 0:    # Break if no side letter
         return
 
-    if len(see_line) == side_letter and next_empty == 0:     # If side cond is already met, break
+    # If side cond is already met:
+    # - Break if all missing numbers will get covered anyways
+    if len(see_line) == side_letter and next_empty == 0 and all(see_line[0] > n for n in remain_line):
         return
+    # - If some numbers could still be seen, remove them from sight
+    elif next_empty == 0 and side_letter == len(see_line) and \
+        not all(see_line[0] > n for n in remain_line):
+        for i in range(size):
+            if isinstance(grid[row_first + i*row_mult][column_first + i*col_mult], list):
+                remove(remain_line[-1], grid[row_first + i*row_mult][column_first + i*col_mult])
+                ultimate_check_singles()
+                break
 
     # All number missing are visible
     if next_empty == all_empty > 0:
-        # When missing as many skyscr as empty visible cells or just miss 1 but some skyscr will be covered
-        if side_letter - len(see_line) == next_empty or (side_letter - len(see_line) == 1 and not all(see_line[0] > n for n in remain_line)):
+        # - When missing as many skyscr as empty visible cells 
+        # or just miss 1 but some skyscr will be covered
+        if side_letter - len(see_line) == next_empty or \
+        (side_letter - len(see_line) == 1 and \
+        not all(see_line[0] > n for n in remain_line)):
             remain_idx = 0
             for i in range(size):
                 if isinstance(grid[row_first + i*row_mult][column_first + i*col_mult], list): 
@@ -308,17 +321,19 @@ def side_constraint(side, line):
                     remain_idx += 1
                 if remain_idx == len(remain_line):
                     break
-        # When missing only one skyscr, add to closest
+        # - When missing only one skyscr, add to closest
         elif side_letter - len(see_line) == 1 and all(see_line[0] > n for n in remain_line):
             grid[row_first][column_first] = remain_line[-1]
 
     # NOT all number missing are visible: remove highest from furthest
-    elif all_empty != next_empty and side_letter - len(see_line) < next_empty and next_empty != 1:
+    elif (all_empty != next_empty and side_letter - len(see_line) < next_empty and next_empty > 1) or \
+        (all_empty != next_empty and side_letter - len(see_line) == 1 and next_empty == 0):
+        # To not see immediately a 1 when missing just one skyscr
+        if side_letter - len(see_line) == 1:
+            remove(1, grid[row_first][column_first])
+            ultimate_check_singles()
         for j in range(size):
             if size - j not in in_line:
-                # To not see immediately a 1 when missing just one skyscr
-                if side_letter - len(see_line) == 1:
-                    remove(1, grid[row_first][column_first])
                 remove(size - j, grid[row_before][column_before])
                 ultimate_check_singles()
                 break
