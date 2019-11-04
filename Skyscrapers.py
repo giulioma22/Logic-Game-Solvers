@@ -6,19 +6,19 @@ runExample = False
 complete_grid = 0
 
 if runExample:
-    # Grid 13
-    size = 5
-    hor_order = [4, 0, 0, 1, 0]
-    hor_order_rev = [0, 0, 0, 2, 4]
-    ver_order = [0, 3, 2, 1, 0]
-    ver_order_rev = [2, 1, 2, 3, 3]
-
-    # # Grid 10
+    # # Grid 15
     # size = 5
-    # hor_order = [2, 3, 3, 1, 2]
-    # hor_order_rev = [3, 1, 2, 3, 3]
-    # ver_order = [3, 1, 2, 3, 2]
-    # ver_order_rev = [2, 4, 1, 3, 4]
+    # hor_order = [3, 1, 2, 0, 2]
+    # hor_order_rev = [2, 0, 4, 0, 0]
+    # ver_order = [2, 2, 4, 1, 4]
+    # ver_order_rev = [0, 3, 2, 0, 0]
+
+    # Grid 17
+    size = 5
+    hor_order = [0, 0, 5, 2, 0]
+    hor_order_rev = [0, 4, 0, 0, 0]
+    ver_order = [0, 2, 0, 0, 0]
+    ver_order_rev = [0, 3, 0, 1, 0]
 else:
     size = int(input("Enter grid SIZE: "))
     hor_order = []
@@ -193,7 +193,6 @@ def ultimate_check_singles():
                         else:
                             check_singles(num+1, i+1, j+1)
                         
-
 # Copy and check if matrix did (not) change after 1 loop
 def is_same_matrix(grid_1, grid_2):
     same_matrix = True
@@ -258,6 +257,8 @@ def side_constraint(side, line):
 
     in_line, see_line, high_idx, remain_line, next_empty = count_skys(side, line)
     all_empty = size - len(in_line)     # Number of empty cells
+    only_small_left = False
+    condition_met = False
 
     if high_idx == -1:     # For now, break if highest number not in line
         return
@@ -291,16 +292,27 @@ def side_constraint(side, line):
         col_mult = -1
         side_letter = ver_order_rev[line]
 
-    if side_letter == 0:    # Break if no side letter
+    # Check if missing numbers are all smaller than ones in sight
+    if all(see_line[0] > n for n in remain_line):
+        only_small_left = True
+    # Check if side condition is already true
+    if side_letter == len(see_line):
+        condition_met = True
+
+    # Break if no side letter
+    if side_letter == 0:
+        return
+
+    # We see all skyscr and there is no empty space between them
+    if condition_met and size - abs(high_idx) == all_empty:
         return
 
     # If side cond is already met:
     # - Break if all missing numbers will get covered anyways
-    if len(see_line) == side_letter and next_empty == 0 and all(see_line[0] > n for n in remain_line):
+    if condition_met and next_empty == 0 and only_small_left:
         return
     # - If some numbers could still be seen, remove them from sight
-    elif next_empty == 0 and side_letter == len(see_line) and \
-        not all(see_line[0] > n for n in remain_line):
+    elif next_empty == 0 and condition_met and not only_small_left:
         for i in range(size):
             if isinstance(grid[row_first + i*row_mult][column_first + i*col_mult], list):
                 remove(remain_line[-1], grid[row_first + i*row_mult][column_first + i*col_mult])
@@ -313,7 +325,7 @@ def side_constraint(side, line):
         # or just miss 1 but some skyscr will be covered
         if side_letter - len(see_line) == next_empty or \
         (side_letter - len(see_line) == 1 and \
-        not all(see_line[0] > n for n in remain_line)):
+        not only_small_left):
             remain_idx = 0
             for i in range(size):
                 if isinstance(grid[row_first + i*row_mult][column_first + i*col_mult], list): 
@@ -322,20 +334,25 @@ def side_constraint(side, line):
                 if remain_idx == len(remain_line):
                     break
         # - When missing only one skyscr, add to closest
-        elif side_letter - len(see_line) == 1 and all(see_line[0] > n for n in remain_line):
+        elif side_letter - len(see_line) == 1 and only_small_left:
             grid[row_first][column_first] = remain_line[-1]
 
-    # NOT all number missing are visible: remove highest from furthest
-    elif (all_empty != next_empty and side_letter - len(see_line) < next_empty and next_empty > 1) or \
-        (all_empty != next_empty and side_letter - len(see_line) == 1 and next_empty == 0):
+    # NOT all number missing are visible
+    elif (all_empty != next_empty and side_letter - len(see_line) < next_empty and \
+        next_empty > 1 and only_small_left) or (all_empty != next_empty and \
+        side_letter - len(see_line) == 1 and next_empty == 0):
         # To not see immediately a 1 when missing just one skyscr
         if side_letter - len(see_line) == 1:
             remove(1, grid[row_first][column_first])
             ultimate_check_singles()
+        # Remove highest from furthest, not to see 1 more
         for j in range(size):
             if size - j not in in_line:
-                remove(size - j, grid[row_before][column_before])
-                ultimate_check_singles()
+                for k in range(size):
+                    if isinstance(grid[row_before - k*row_mult][column_before - k*col_mult], list):
+                        remove(size - j, grid[row_before - k*row_mult][column_before - k*col_mult])
+                        ultimate_check_singles()
+                        break
                 break
     
     # Not cover a 1 when we need to see all next empty spaces
@@ -347,7 +364,7 @@ def side_constraint(side, line):
                 break
 
     # When I already have skyline, but still have empty cells in sight
-    if next_empty > 0 and side_letter == len(see_line):
+    if next_empty > 0 and condition_met:
         grid[row_first][column_first] = remain_line[-1]
 
     return
