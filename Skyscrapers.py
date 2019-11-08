@@ -260,7 +260,7 @@ def side_constraint(side, line):
     only_small_left = False
     condition_met = False
 
-    if high_idx == -1:     # For now, break if highest number not in line
+    if size not in in_line:     # For now, break if highest number not in line
         return
 
     if side == "Top":
@@ -344,35 +344,40 @@ def side_constraint(side, line):
     elif (all_empty != next_empty and side_letter - len(see_line) < next_empty and \
         next_empty > 1 and only_small_left) or (all_empty != next_empty and \
         side_letter - len(see_line) == 1 and next_empty == 0):
+
+        # Before which number we will remove
+        before_this_number = size
+
         # To not see immediately a 1 when missing just one skyscr
-        if side_letter - len(see_line) == 1:
+        if side_letter - len(see_line) == 1 and isinstance(grid[row_first][column_first], list):
             remove(1, grid[row_first][column_first])
             print(side+" 4) Removed "+str(1)+" in "+str(row_first)+", "+str(column_first)+"\n")
             ultimate_check_singles()
         # Remove highest from furthest, not to see 1 more
         for j in range(size):
-            if size - j not in in_line: #TODO: remove the highest from in front of the number = high_remain+1
+            if size - j not in in_line:
                 for k in range(size):
-                    if j == 1 and isinstance(grid[row_before - k*row_mult][column_before - k*col_mult], list):
-                        remove(size - j, grid[row_before - k*row_mult][column_before - k*col_mult])
-                        print(side+" 5) Removed "+str(size - j)+" in "+str(row_before - k*row_mult)+", "+str(column_before - k*col_mult)+"\n")                        
-                        ultimate_check_singles()
-                        break
-                    elif j > 1 and grid[row_before - k*row_mult][column_before - k*col_mult] == size-j+1:
+                    # TODO: Don't remove highest when is the one we need to see (when missing only 1)
+                    if grid[row_before - k*row_mult][column_before - k*col_mult] == before_this_number:
                         remove(size - j, grid[row_before - (k+1)*row_mult][column_before - (k+1)*col_mult])
-                        print(side+" 6) Removed "+str(size - j)+" in "+str(row_before - (k+1)*row_mult)+", "+str(column_before - (k+1)*col_mult)+"\n")                        
+                        print(side+" 5) Removed "+str(size - j)+" in "+str(row_before - (k+1)*row_mult)+", "+str(column_before - (k+1)*col_mult)+"\n")                        
                         ultimate_check_singles()
                         break
                 break
+            else:
+                if size - j in see_line:
+                    before_this_number = size-j
     
-    # Not cover a 1 when we need to see all next empty spaces
-    elif all_empty != next_empty and side_letter - len(see_line) == next_empty and next_empty != 1:
+    # Remove 1s that could get hidden when we need to see all next empty spaces
+    elif all_empty != next_empty and side_letter - len(see_line) == next_empty and next_empty > 1:
         for i in range(size):
+            # Stop when we get to first cell, only place where it cannot get hidden
+            if row_before - i*row_mult == row_first and column_before - i*col_mult == column_first:
+                break
             if isinstance(grid[row_before - i*row_mult][column_before - i*col_mult], list):
                 remove(1, grid[row_before - i*row_mult][column_before - i*col_mult])
                 print(side+" 6) Removed "+str(1)+" in "+str(row_before - i*row_mult)+", "+str(column_before - i*col_mult)+"\n")
                 ultimate_check_singles()
-                break
 
     # When I already have skyline, but still have empty cells in sight
     if next_empty > 0 and condition_met:
