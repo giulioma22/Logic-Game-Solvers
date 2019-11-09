@@ -220,11 +220,15 @@ def is_same_matrix(grid_1, grid_2):
 
 # Count skyscrapers and keep track of number seen
 def count_skys(side, line):
+
     in_line = []
     see_line = []
     high_idx = -1
     remain_line = []
     next_empty = 0
+    cnt_empty = 0
+    prev_int = -1
+    visib_empty = 0
     for i in range(size):
         if side == "Top":
             idx = i+1
@@ -245,17 +249,25 @@ def count_skys(side, line):
                 see_line.append(cell)
                 if cell == size:
                     high_idx = idx
-        if in_line == []:   # If I haven't seen any number, it's an empty space
+            if cell - prev_int > 1:
+                visib_empty += cnt_empty
+                cnt_empty = 0
+                prev_int = cell
+        # Keep track of empty cells that could have a visible number placed in it
+        elif isinstance(cell, list) and size not in in_line:
+            cnt_empty += 1
+        # If I haven't seen any number, it's an empty space
+        if in_line == []:
             next_empty += 1
         
         remain_line = [i+1 for i in range(size) if i+1 not in in_line]
 
-    return in_line, see_line, high_idx, remain_line, next_empty
+    return in_line, see_line, high_idx, remain_line, next_empty, visib_empty
 
 # Adding/removing numbers based on side letters
 def side_constraint(side, line):
 
-    in_line, see_line, high_idx, remain_line, next_empty = count_skys(side, line)
+    in_line, see_line, high_idx, remain_line, next_empty, visib_empty = count_skys(side, line)
     all_empty = size - len(in_line)     # Number of empty cells
     only_small_left = False
     condition_met = False
@@ -298,7 +310,7 @@ def side_constraint(side, line):
     # Check if side condition is already true
     if side_letter == len(see_line):
         condition_met = True
-
+    
     # Break if no side letter
     if side_letter == 0:
         return
@@ -353,15 +365,21 @@ def side_constraint(side, line):
             remove(1, grid[row_first][column_first])
             print(side+" 4) Removed "+str(1)+" in "+str(row_first)+", "+str(column_first)+"\n")
             ultimate_check_singles()
+
+        # TODO: When I see a 1 immediately and miss 1 number, then it's the highest number (2, 2)
+
         # Remove highest from furthest, not to see 1 more
         for j in range(size):
             if size - j not in in_line:
                 for k in range(size):
-                    # TODO: Don't remove highest when is the one we need to see (when missing only 1)
                     if grid[row_before - k*row_mult][column_before - k*col_mult] == before_this_number:
-                        remove(size - j, grid[row_before - (k+1)*row_mult][column_before - (k+1)*col_mult])
-                        print(side+" 5) Removed "+str(size - j)+" in "+str(row_before - (k+1)*row_mult)+", "+str(column_before - (k+1)*col_mult)+"\n")                        
-                        ultimate_check_singles()
+                        if visib_empty == 1:
+                            grid[row_before - (k+1)*row_mult][column_before - (k+1)*col_mult] = size -j
+                            print(side+" 5.1) Added "+str(size - j)+" in "+str(row_before - (k+1)*row_mult)+", "+str(column_before - (k+1)*col_mult)+"\n")                        
+                        if visib_empty > 1:
+                            remove(size - j, grid[row_before - (k+1)*row_mult][column_before - (k+1)*col_mult])
+                            print(side+" 5.2) Removed "+str(size - j)+" in "+str(row_before - (k+1)*row_mult)+", "+str(column_before - (k+1)*col_mult)+"\n")                        
+                            ultimate_check_singles()
                         break
                 break
             else:
@@ -444,17 +462,17 @@ same_grid = False
 while complete_grid != size**2 and same_grid == False:
 
     ultimate_check_singles()
-    print_grid("New loop")
+    # print_grid("New loop")
 
     for i in range(size):
         side_constraint("Top", i)
         # print_grid("Top " + str(i+1))
         side_constraint("Bottom", i)
-        if i+1 == 3:
-            print_grid("Bottom " + str(i+1))
+        # if i+1 == 3:
+        #     print_grid("Bottom " + str(i+1))
         side_constraint("Left", i)
-        if i+1 == 3:
-            print_grid("Left " + str(i+1))
+        # if i+1 == 3:
+        #     print_grid("Left " + str(i+1))
         side_constraint("Right", i)
         # print_grid("Right " + str(i+1))
 
