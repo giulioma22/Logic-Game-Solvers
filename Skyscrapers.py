@@ -2,9 +2,9 @@
 # I N P U T   D A T A - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Has to be False to ask for input (true will run example)
-runExample = False
+runExample = True
 
-debugPrint = False
+debugPrint = True
 complete_grid = 0
 
 if runExample:
@@ -382,20 +382,26 @@ def side_constraint(side, line):
                 print(side+" 3.1) Removed "+str(1)+" in "+str(row_first)+", "+str(column_first)+"\n")
             ultimate_check_singles()
 
-        # Remove highest from furthest, not to see 1 more
+        print_grid()
+
+        # Remove highest from furthest, not to see one extra number
         for j in range(size):
             if size - j not in in_line:
                 for k in range(size):
-                    if grid[row_before - k*row_mult][column_before - k*col_mult] == before_this_number:
+                    if grid[row_before - (k-1)*row_mult][column_before - (k-1)*col_mult] == before_this_number:
                         if visib_empty == 1:
-                            grid[row_before - (k+1)*row_mult][column_before - (k+1)*col_mult] = size -j
+                            grid[row_before - k*row_mult][column_before - k*col_mult] = size -j
                             if debugPrint:
-                                print(side+" 3.2) Added "+str(size - j)+" in "+str(row_before - (k+1)*row_mult)+", "+str(column_before - (k+1)*col_mult)+"\n")                        
-                        if visib_empty > 1:
-                            remove(size - j, grid[row_before - (k+1)*row_mult][column_before - (k+1)*col_mult])
-                            if debugPrint:
-                                print(side+" 3.3) Removed "+str(size - j)+" in "+str(row_before - (k+1)*row_mult)+", "+str(column_before - (k+1)*col_mult)+"\n")                        
-                            ultimate_check_singles()
+                                print(side+" 3.2) Added "+str(size - j)+" in "+str(row_before - k*row_mult)+", "+str(column_before - k*col_mult)+"\n")                        
+                        if visib_empty > 1 and side_number == 2:
+                            for l in range(size):
+                                if not (row_before - (k+l)*row_mult == row_first and column_before - (k+l)*col_mult == column_first):
+                                    remove(size - j, grid[row_before - (k+l)*row_mult][column_before - (k+l)*col_mult])
+                                    if debugPrint:
+                                        print(side+" 3.3) Removed "+str(size - j)+" in "+str(row_before - (k+l)*row_mult)+", "+str(column_before - (k+l)*col_mult)+"\n")                        
+                                    ultimate_check_singles()
+                                    continue
+                                break
                         break
                 break
             else:
@@ -412,7 +418,6 @@ def side_constraint(side, line):
             # Stop when we get to first cell, only place where it cannot get hidden
             if row_before - (i+1)*row_mult == row_first and column_before - (i+1)*col_mult == column_first:
                 break
-            # if isinstance(grid[row_before - i*row_mult][column_before - i*col_mult], list):
             elif seenSwitch:
                 remove(1, grid[row_before - (i+1)*row_mult][column_before - (i+1)*col_mult])
                 if debugPrint:
@@ -427,7 +432,6 @@ def side_constraint(side, line):
 
     # Remove possibility of 1st cell numbers when some high numbers got hidden
     if only_small_left and len(see_line) != len(in_line) and side_number - len(see_line) > 1:
-        print(remain_line)
         remove(remain_line[-1], grid[row_first][column_first])
         print(side+" 6) Removed "+str(remain_line[-1])+" in "+str(row_first)+", "+str(column_first)+"\n")
         ultimate_check_singles()
