@@ -377,9 +377,13 @@ def side_constraint(side, line):
 
         # To not see immediately a 1 when missing just one skyscr
         if side_number - len(see_line) == 1 and isinstance(grid[row_first][column_first], list):
-            remove(1, grid[row_first][column_first])
-            if debugPrint:
-                print(side+" 3.1) Removed "+str(1)+" in "+str(row_first)+", "+str(column_first)+"\n")
+            # We need to remove more than just 1 (when the first number can't cover all the next)
+            for k in range(size):   # Loop for numbers to remove
+                if not next_empty - 1 > k:
+                    break
+                remove(k+1, grid[row_first][column_first])
+                if debugPrint:
+                    print(side+" 3.1) Removed "+str(k+1)+" in "+str(row_first)+", "+str(column_first)+"\n")
             ultimate_check_singles()
 
         print_grid()
