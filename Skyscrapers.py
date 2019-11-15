@@ -2,9 +2,9 @@
 # I N P U T   D A T A - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Has to be False to ask for input (true will run example)
-runExample = True
+runExample = False
 
-debugPrint = True
+debugPrint = False
 complete_grid = 0
 
 if runExample:
@@ -15,12 +15,12 @@ if runExample:
     ver_order = [2, 4, 2, 3, 1, 2]
     ver_order_rev = [1, 2, 2, 4, 3, 4]
 
-    # # Grid 20
+    # # Grid 23
     # size = 6
-    # hor_order = [2, 1, 5, 2, 4, 2]
-    # hor_order_rev = [3, 4, 2, 5, 1, 2]
-    # ver_order = [2, 3, 1, 3, 2, 4]
-    # ver_order_rev = [3, 3, 3, 1, 3, 2]
+    # hor_order = [0, 3, 1, 0, 4, 4]
+    # hor_order_rev = [4, 0, 0, 0, 2, 1]
+    # ver_order = [3, 0, 2, 2, 4, 4]
+    # ver_order_rev = [3, 0, 2, 3, 2, 1]
 else:
     size = int(input("Enter grid SIZE: "))
     hor_order = []
@@ -393,8 +393,6 @@ def side_constraint(side, line):
                         print(side+" 3.1) Removed "+str(k+1)+" in "+str(row_first)+", "+str(column_first)+"\n")
                 ultimate_check_singles()
 
-            print_grid()
-
             # Remove highest from furthest, not to see one extra number
             for j in range(size):
                 if size - j not in in_line:
@@ -422,6 +420,14 @@ def side_constraint(side, line):
         # Remove 1s that could get hidden when we need to see all next empty spaces
         elif side_number - len(see_line) == next_empty and next_empty > 1:
             # TODO: remove possible numbers when some high numbers are hidden
+            diff = abs(len(in_line) - len(see_line))
+            if all(remain_line[-1] < n for n in in_line) and diff != 0:
+                for i in range(next_empty):
+                    for j in range(diff + 1 - i):
+                        remove(remain_line[-1-j], grid[row_first + i*row_mult][column_first + i*col_mult])
+                        if debugPrint:
+                            print(side+" 4.1) Removed "+str(remain_line[-1-j])+" in "+str(row_first+i*row_mult)+", "+str(column_first+i*col_mult)+"\n")
+                        ultimate_check_singles()
 
             seenSwitch = False
             for i in range(size):
@@ -434,7 +440,7 @@ def side_constraint(side, line):
                 elif seenSwitch:
                     remove(1, grid[row_before - (i+1)*row_mult][column_before - (i+1)*col_mult])
                     if debugPrint:
-                        print(side+" 4) Removed "+str(1)+" in "+str(row_before - (i+1)*row_mult)+", "+str(column_before - (i+1)*col_mult)+"\n")
+                        print(side+" 4.2) Removed "+str(1)+" in "+str(row_before - (i+1)*row_mult)+", "+str(column_before - (i+1)*col_mult)+"\n")
                     ultimate_check_singles()
 
     # When I already have skyline, but still have empty cells in sight
@@ -446,7 +452,8 @@ def side_constraint(side, line):
     # Remove possibility of 1st cell numbers when some high numbers got hidden
     if only_small_left and len(see_line) != len(in_line) and side_number - len(see_line) > 1:
         remove(remain_line[-1], grid[row_first][column_first])
-        print(side+" 6) Removed "+str(remain_line[-1])+" in "+str(row_first)+", "+str(column_first)+"\n")
+        if debugPrint:
+            print(side+" 6) Removed "+str(remain_line[-1])+" in "+str(row_first)+", "+str(column_first)+"\n")
         ultimate_check_singles()
 
     return
@@ -516,7 +523,7 @@ while complete_grid != size**2 and same_grid == False:
         side_constraint("Bottom", i)
         # print_grid("Bottom " + str(i+1))
         side_constraint("Left", i)
-        print_grid("Left " + str(i+1))
+        # print_grid("Left " + str(i+1))
         side_constraint("Right", i)
         # print_grid("Right " + str(i+1))
 
@@ -531,5 +538,3 @@ if same_grid:
 else:
     # Drawing the FINAL grid
     print_grid("\x1b[1;33;44m" + " FINAL GRID " + "\x1b[0m")
-
-print_columns()
