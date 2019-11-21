@@ -2,25 +2,25 @@
 # I N P U T   D A T A - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Has to be False to ask for input (true will run example)
-runExample = False
+runExample = True
 
-debugPrint = False
+debugPrint = True
 complete_grid = 0
 
 if runExample:
-    # Grid 22
-    size = 6
-    hor_order = [2, 3, 4, 3, 2, 1]
-    hor_order_rev = [2, 1, 2, 4, 3, 4]
-    ver_order = [2, 4, 2, 3, 1, 2]
-    ver_order_rev = [1, 2, 2, 4, 3, 4]
-
-    # # Grid 23
+    # # Grid 22
     # size = 6
-    # hor_order = [0, 3, 1, 0, 4, 4]
-    # hor_order_rev = [4, 0, 0, 0, 2, 1]
-    # ver_order = [3, 0, 2, 2, 4, 4]
-    # ver_order_rev = [3, 0, 2, 3, 2, 1]
+    # hor_order = [2, 3, 4, 3, 2, 1]
+    # hor_order_rev = [2, 1, 2, 4, 3, 4]
+    # ver_order = [2, 4, 2, 3, 1, 2]
+    # ver_order_rev = [1, 2, 2, 4, 3, 4]
+
+    # Grid 23
+    size = 6
+    hor_order = [0, 3, 1, 0, 4, 4]
+    hor_order_rev = [4, 0, 0, 0, 2, 1]
+    ver_order = [3, 0, 2, 2, 4, 4]
+    ver_order_rev = [3, 0, 2, 3, 2, 1]
 else:
     size = int(input("Enter grid SIZE: "))
     hor_order = []
@@ -281,6 +281,7 @@ def side_constraint(side, line):
     all_empty = size - len(in_line)     # Number of empty cells
     only_small_left = False
     condition_met = False
+    diff = abs(len(in_line) - len(see_line))
 
     if side == "Top":
         row_before = high_idx-1
@@ -402,9 +403,11 @@ def side_constraint(side, line):
                                 grid[row_before - k*row_mult][column_before - k*col_mult] = size -j
                                 if debugPrint:
                                     print(side+" 3.2) Added "+str(size - j)+" in "+str(row_before - k*row_mult)+", "+str(column_before - k*col_mult)+"\n")                        
-                            if visib_empty > 1 and side_number == 2:
+                            # if visib_empty > 1 and side_number == 2:
+                            if visib_empty > 1 and side_number - len(see_line) == 1 and (diff == 0 or (diff > 0 and only_small_left)):
                                 for l in range(size):
                                     if not (row_before - (k+l)*row_mult == row_first and column_before - (k+l)*col_mult == column_first):
+                                        print_grid()
                                         remove(size - j, grid[row_before - (k+l)*row_mult][column_before - (k+l)*col_mult])
                                         if debugPrint:
                                             print(side+" 3.3) Removed "+str(size - j)+" in "+str(row_before - (k+l)*row_mult)+", "+str(column_before - (k+l)*col_mult)+"\n")                        
@@ -419,8 +422,6 @@ def side_constraint(side, line):
     
         # Remove 1s that could get hidden when we need to see all next empty spaces
         elif side_number - len(see_line) == next_empty and next_empty > 1:
-            # TODO: remove possible numbers when some high numbers are hidden
-            diff = abs(len(in_line) - len(see_line))
             if all(remain_line[-1] < n for n in in_line) and diff != 0:
                 for i in range(next_empty):
                     for j in range(diff + 1 - i):
