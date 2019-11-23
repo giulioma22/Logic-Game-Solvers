@@ -290,6 +290,7 @@ def side_constraint(side, line):
         row_mult = 1
         col_mult = 0
         side_number = hor_order[line]
+        opposite_number = hor_order_rev[line]
     elif side == "Bottom":
         row_before = high_idx+1
         row_first = -2
@@ -297,6 +298,7 @@ def side_constraint(side, line):
         row_mult = -1
         col_mult = 0
         side_number = hor_order_rev[line]
+        opposite_number = hor_order[line]
     elif side == "Left":
         row_before = row_first = line+1
         column_before = high_idx-1
@@ -304,6 +306,7 @@ def side_constraint(side, line):
         row_mult = 0
         col_mult = 1
         side_number = ver_order[line]
+        opposite_number = ver_order_rev[line]
     elif side == "Right":
         row_before = row_first = line+1
         column_before = high_idx+1
@@ -311,20 +314,44 @@ def side_constraint(side, line):
         row_mult = 0
         col_mult = -1
         side_number = ver_order_rev[line]
+        opposite_number = ver_order[line]
 
     missSkr = side_number - len(see_line)
 
     if size not in in_line:     # When highest number not in line
-        if next_empty == 0 and side_number == 2:
-            grid[row_first + row_mult][column_first + col_mult] = size
-            if debugPrint:
-                print(side+" 0) Added "+str(size)+" in "+str(row_first + row_mult)+", "+str(column_first + col_mult)+"\n")
-        # elif next_empty == 0 and missSkr == size - grid[row_first][column_first]:
-        #     for i in range(size):    
-        #         for j in range(missSkr):
-        #             if (side_number + j + 1) in grid[row_first + i*row_mult][column_first + i*col_mult]:
-                        
-
+        if side_number == 2:    # Considering only case for side_number == 2
+            if next_empty == 0:
+                grid[row_first + row_mult][column_first + col_mult] = size
+                if debugPrint:
+                    print(side+" 0) Added "+str(size)+" in "+str(row_first + row_mult)+", "+str(column_first + col_mult)+"\n")
+            elif next_empty != 0 and len(in_line) == 0:
+                switch01 = False
+                for i in range(size): 
+                    current_cell = grid[row_first + i*row_mult][column_first + i*col_mult]
+                    # Continue if it's the first cell (not needed)
+                    if row_first + i*row_mult == row_first and column_first + i*col_mult == column_first:
+                        continue
+                    # Remove (size-1) if haven't seen size and not first cell
+                    if not switch01 and (size-1) in current_cell and size not in current_cell:
+                        remove(size-1, grid[row_first + i*row_mult][column_first + i*col_mult])
+                        if debugPrint:
+                            print(side+" 0.1) Removed "+str(size-1)+" in "+str(row_first + i*row_mult)+", "+str(column_first + i*col_mult)+"\n")
+                        ultimate_check_singles()
+                    # Break if first cell w/ highest number has no (size-1)
+                    if size in current_cell and (size - 1) not in current_cell:
+                        break
+                    # Change switch if we have both in same cell
+                    elif size in current_cell and (size - 1) in current_cell:
+                        if not switch01:
+                            switch01 = True
+                        else:
+                            break
+                    # Remove if (size-1) in cell w/ size or if we have a 2 also on the other side
+                    if (size - 1) in current_cell and switch01 and (size in current_cell or side_number == opposite_number):
+                        remove(size-1, grid[row_first + i*row_mult][column_first + i*col_mult])
+                        if debugPrint:
+                            print(side+" 0.2) Removed "+str(size-1)+" in "+str(row_first + i*row_mult)+", "+str(column_first + i*col_mult)+"\n")
+                        ultimate_check_singles()
         return
 
     # Check if missSkr numbers are all smaller than ones in sight
