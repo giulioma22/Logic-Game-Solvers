@@ -321,9 +321,13 @@ def side_constraint(side, line):
     if size not in in_line:     # When highest number not in line
         if side_number == 2:    # Considering only case for side_number == 2
             if next_empty == 0:
-                grid[row_first + row_mult][column_first + col_mult] = size
-                if debugPrint:
-                    print(side+" 0) Added "+str(size)+" in "+str(row_first + row_mult)+", "+str(column_first + col_mult)+"\n")
+                for i in range(size):
+                    if isinstance(grid[row_first + i*row_mult][column_first + i*col_mult], list) and size in grid[row_first + i*row_mult][column_first + i*col_mult]:
+                        grid[row_first + i*row_mult][column_first + i*col_mult] = size
+                        clear_lines()
+                        if debugPrint:
+                            print(side+" 0) Added "+str(size)+" in "+str(row_first + i*row_mult)+", "+str(column_first + i*col_mult)+"\n")
+                        break
             elif next_empty != 0 and len(in_line) == 0:
                 switch01 = False
                 for i in range(size): 
