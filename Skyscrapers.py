@@ -320,7 +320,7 @@ def side_constraint(side, line):
 
     if size not in in_line:     # When highest number not in line
         if side_number == 2:    # Considering only case for side_number == 2
-            if next_empty == 0:
+            if next_empty == 0 and all(grid[row_first][column_first] < n for n in remain_line):
                 for i in range(size):
                     if isinstance(grid[row_first + i*row_mult][column_first + i*col_mult], list) and size in grid[row_first + i*row_mult][column_first + i*col_mult]:
                         grid[row_first + i*row_mult][column_first + i*col_mult] = size
@@ -356,6 +356,10 @@ def side_constraint(side, line):
                         if debugPrint:
                             print(side+" 0.2) Removed "+str(size-1)+" in "+str(row_first + i*row_mult)+", "+str(column_first + i*col_mult)+"\n")
                         ultimate_check_singles()
+            if isinstance(grid[row_first + row_mult][column_first + col_mult], list) and size not in grid[row_first + row_mult][column_first + col_mult]:
+                remove(1, grid[row_first][column_first])
+                if debugPrint:
+                    print(side+" 0.3) Removed "+str(1)+" in "+str(row_first)+", "+str(column_first)+"\n")
         return
 
     # Check if missSkr numbers are all smaller than ones in sight
@@ -553,7 +557,7 @@ same_grid = False
 while complete_grid != size**2 and same_grid == False:
 
     ultimate_check_singles()
-    print_grid("New loop")
+    # print_grid("New loop")
 
     for i in range(size):
         side_constraint("Top", i)
@@ -570,6 +574,10 @@ while complete_grid != size**2 and same_grid == False:
 
     complete_grid = clear_lines()
     # print_grid("End loop")
+    # grid[3][1] = 5
+    # grid[6][1] = 3
+    # grid[6][3] = 4
+    # grid[5][2] = 3
 
 if same_grid:
     print_grid("\x1b[1;33;41m" + " ERROR: infinite loop " + "\x1b[0m")
@@ -577,4 +585,4 @@ else:
     # Drawing the FINAL grid
     print_grid("\x1b[1;33;44m" + " FINAL GRID " + "\x1b[0m")
 
-print_columns()
+# print_columns()
