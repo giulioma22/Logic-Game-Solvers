@@ -357,9 +357,11 @@ def side_constraint(side, line):
                             print(side+" 0.2) Removed "+str(size-1)+" in "+str(row_first + i*row_mult)+", "+str(column_first + i*col_mult)+"\n")
                         ultimate_check_singles()
             if isinstance(grid[row_first + row_mult][column_first + col_mult], list) and size not in grid[row_first + row_mult][column_first + col_mult]:
-                remove(1, grid[row_first][column_first])
-                if debugPrint:
-                    print(side+" 0.3) Removed "+str(1)+" in "+str(row_first)+", "+str(column_first)+"\n")
+                cell = grid[row_first][column_first]
+                if isinstance(cell, list) and 1 in cell:
+                    remove(1, grid[row_first][column_first])
+                    if debugPrint:
+                        print(side+" 0.3) Removed "+str(1)+" in "+str(row_first)+", "+str(column_first)+"\n")
         return
 
     # Check if missSkr numbers are all smaller than ones in sight
@@ -432,9 +434,11 @@ def side_constraint(side, line):
                 for k in range(size):   # Loop for numbers to remove
                     if not next_empty - 1 > k:
                         break
-                    remove(k+1, grid[row_first][column_first])
-                    if debugPrint:
-                        print(side+" 3.1) Removed "+str(k+1)+" in "+str(row_first)+", "+str(column_first)+"\n")
+                    cell = grid[row_first][column_first]
+                    if isinstance(cell, list) and k+1 in cell:
+                        remove(k+1, grid[row_first][column_first])
+                        if debugPrint:
+                            print(side+" 3.1) Removed "+str(k+1)+" in "+str(row_first)+", "+str(column_first)+"\n")
                 ultimate_check_singles()
 
             # Remove highest from furthest, not to see one extra number
@@ -449,10 +453,12 @@ def side_constraint(side, line):
                             if visib_empty > 1 and missSkr == 1 and (diff == 0 or (diff > 0 and only_small_left)):
                                 for l in range(size):
                                     if not (row_before - (k+l)*row_mult == row_first and column_before - (k+l)*col_mult == column_first):
-                                        remove(size - j, grid[row_before - (k+l)*row_mult][column_before - (k+l)*col_mult])
-                                        if debugPrint:
-                                            print(side+" 3.3) Removed "+str(size - j)+" in "+str(row_before - (k+l)*row_mult)+", "+str(column_before - (k+l)*col_mult)+"\n")                        
-                                        ultimate_check_singles()
+                                        cell = grid[row_before - (k+l)*row_mult][column_before - (k+l)*col_mult]
+                                        if isinstance(cell, list) and size - j in cell:
+                                            remove(size - j, grid[row_before - (k+l)*row_mult][column_before - (k+l)*col_mult])
+                                            if debugPrint:
+                                                print(side+" 3.3) Removed "+str(size - j)+" in "+str(row_before - (k+l)*row_mult)+", "+str(column_before - (k+l)*col_mult)+"\n")                        
+                                            ultimate_check_singles()
                                         continue
                                     break
                             break
@@ -466,10 +472,12 @@ def side_constraint(side, line):
             if all(remain_line[-1] < n for n in in_line) and diff != 0:
                 for i in range(next_empty):
                     for j in range(next_empty - i - 1):
-                        remove(remain_line[-1-j], grid[row_first + i*row_mult][column_first + i*col_mult])
-                        if debugPrint:
-                            print(side+" 4.1) Removed "+str(remain_line[-1-j])+" in "+str(row_first+i*row_mult)+", "+str(column_first+i*col_mult)+"\n")
-                        ultimate_check_singles()
+                        cell = grid[row_first + i*row_mult][column_first + i*col_mult]
+                        if isinstance(cell, list) and remain_line[-1-j] in cell:
+                            remove(remain_line[-1-j], grid[row_first + i*row_mult][column_first + i*col_mult])
+                            if debugPrint:
+                                print(side+" 4.1) Removed "+str(remain_line[-1-j])+" in "+str(row_first+i*row_mult)+", "+str(column_first+i*col_mult)+"\n")
+                            ultimate_check_singles()
 
             seenSwitch = False
             for i in range(size):
@@ -480,10 +488,12 @@ def side_constraint(side, line):
                 if row_before - (i+1)*row_mult == row_first and column_before - (i+1)*col_mult == column_first:
                     break
                 elif seenSwitch:
-                    remove(1, grid[row_before - (i+1)*row_mult][column_before - (i+1)*col_mult])
-                    if debugPrint:
-                        print(side+" 4.2) Removed "+str(1)+" in "+str(row_before - (i+1)*row_mult)+", "+str(column_before - (i+1)*col_mult)+"\n")
-                    ultimate_check_singles()
+                    cell = grid[row_before - (i+1)*row_mult][column_before - (i+1)*col_mult]
+                    if isinstance(cell, list) and 1 in cell:
+                        remove(1, grid[row_before - (i+1)*row_mult][column_before - (i+1)*col_mult])
+                        if debugPrint:
+                            print(side+" 4.2) Removed "+str(1)+" in "+str(row_before - (i+1)*row_mult)+", "+str(column_before - (i+1)*col_mult)+"\n")
+                        ultimate_check_singles()
 
     # When I already have skyline, but still have empty cells in sight
     if next_empty > 0 and condition_met:
@@ -493,10 +503,12 @@ def side_constraint(side, line):
 
     # Remove possibility of 1st cell numbers when some high numbers got hidden
     if only_small_left and len(see_line) != len(in_line) and missSkr > 1:
-        remove(remain_line[-1], grid[row_first][column_first])
-        if debugPrint:
-            print(side+" 6) Removed "+str(remain_line[-1])+" in "+str(row_first)+", "+str(column_first)+"\n")
-        ultimate_check_singles()
+        cell = grid[row_first][column_first]
+        if isinstance(cell, list) and remain_line[-1] in cell:
+            remove(remain_line[-1], grid[row_first][column_first])
+            if debugPrint:
+                print(side+" 6) Removed "+str(remain_line[-1])+" in "+str(row_first)+", "+str(column_first)+"\n")
+            ultimate_check_singles()
 
     return
 
@@ -557,7 +569,7 @@ same_grid = False
 while complete_grid != size**2 and same_grid == False:
 
     ultimate_check_singles()
-    # print_grid("New loop")
+    print_grid("New loop")
 
     for i in range(size):
         side_constraint("Top", i)
@@ -575,9 +587,6 @@ while complete_grid != size**2 and same_grid == False:
     complete_grid = clear_lines()
     # print_grid("End loop")
     # grid[3][1] = 5
-    # grid[6][1] = 3
-    # grid[6][3] = 4
-    # grid[5][2] = 3
 
 if same_grid:
     print_grid("\x1b[1;33;41m" + " ERROR: infinite loop " + "\x1b[0m")
@@ -585,4 +594,4 @@ else:
     # Drawing the FINAL grid
     print_grid("\x1b[1;33;44m" + " FINAL GRID " + "\x1b[0m")
 
-# print_columns()
+print_columns()
