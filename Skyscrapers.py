@@ -89,12 +89,13 @@ def clear_lines():
     for i in range(size):
         for j in range(size):
             if isinstance(grid[i+1][j+1], int):
+                int_num = grid[i+1][j+1]
                 complete_grid += 1
                 for k in range(size):
-                    if isinstance(grid[k+1][j+1], list) and grid[i+1][j+1] in grid[k+1][j+1]:
-                        remove(grid[i+1][j+1], grid[k+1][j+1])
-                    if isinstance(grid[i+1][k+1], list) and grid[i+1][j+1] in grid[i+1][k+1]:
-                        remove(grid[i+1][j+1], grid[i+1][k+1])
+                    if isinstance(grid[k+1][j+1], list) and int_num in grid[k+1][j+1]:
+                        remove(int_num, grid[k+1][j+1])
+                    if isinstance(grid[i+1][k+1], list) and int_num in grid[i+1][k+1]:
+                        remove(int_num, grid[i+1][k+1])
     return complete_grid
 
 # Check for initial min and max side numbers
@@ -162,7 +163,7 @@ def check_singles(number, x, y):
         #Only one in line?
         if isinstance(grid[x][i+1], int) and number == grid[x][i+1]:
             appears_once_horiz = False
-            switch_hor = True 
+            switch_hor = True
         elif isinstance(grid[x][i+1], list) and number in grid[x][i+1]:
             if appears_once_horiz == False and switch_hor == False:
                 appears_once_horiz = True
@@ -202,7 +203,7 @@ def ultimate_check_singles():
                             changes_check = check_singles(num+1, i+1, j+1)
                         else:
                             check_singles(num+1, i+1, j+1)
-                        
+
 # Copy and check if matrix did (not) change after 1 loop
 def is_same_matrix(grid_1, grid_2):
     same_matrix = True
@@ -384,10 +385,11 @@ def side_constraint(side, line):
     if condition_met and next_empty == 0 and only_small_left:
         return
     # - If some numbers could still be seen, remove them from sight
-    elif next_empty == 0 and condition_met and not only_small_left:
+    elif next_empty == 0 and condition_met and not only_small_left and visib_empty > 0:
         for i in range(size):
             if isinstance(grid[row_first + i*row_mult][column_first + i*col_mult], list):
                 remove(remain_line[-1], grid[row_first + i*row_mult][column_first + i*col_mult])
+                # TODO: Fix this constraint
                 if debugPrint:
                     print(side+" 1) Removed "+str(remain_line[-1])+" in "+str(row_first + i*row_mult)+", "+str(column_first + i*col_mult)+"\n")
                 ultimate_check_singles()
@@ -446,8 +448,8 @@ def side_constraint(side, line):
                 if size - j not in in_line:
                     for k in range(size):
                         if grid[row_before - (k-1)*row_mult][column_before - (k-1)*col_mult] == before_this_number:
-                            if visib_empty == 1:
-                                grid[row_before - k*row_mult][column_before - k*col_mult] = size -j
+                            if visib_empty == 1 and isinstance(grid[row_before - k*row_mult][column_before - k*col_mult], list) and size-j in grid[row_before - k*row_mult][column_before - k*col_mult]:
+                                grid[row_before - k*row_mult][column_before - k*col_mult] = size - j
                                 if debugPrint:
                                     print(side+" 3.2) Added "+str(size - j)+" in "+str(row_before - k*row_mult)+", "+str(column_before - k*col_mult)+"\n")                        
                             if visib_empty > 1 and missSkr == 1 and (diff == 0 or (diff > 0 and only_small_left)):
@@ -586,7 +588,7 @@ while complete_grid != size**2 and same_grid == False:
 
     complete_grid = clear_lines()
     # print_grid("End loop")
-    # grid[3][1] = 5
+    # grid[4][1] = 4
 
 if same_grid:
     print_grid("\x1b[1;33;41m" + " ERROR: infinite loop " + "\x1b[0m")
