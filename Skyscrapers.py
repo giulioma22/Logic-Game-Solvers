@@ -443,6 +443,8 @@ def side_constraint(side, line):
                             print(side+" 3.1) Removed "+str(k+1)+" in "+str(row_first)+", "+str(column_first)+"\n")
                 ultimate_check_singles()
 
+            
+
             # Remove highest from furthest, not to see one extra number
             for j in range(size):
                 if size - j not in in_line:
@@ -496,6 +498,22 @@ def side_constraint(side, line):
                         if debugPrint:
                             print(side+" 4.2) Removed "+str(1)+" in "+str(row_before - (i+1)*row_mult)+", "+str(column_before - (i+1)*col_mult)+"\n")
                         ultimate_check_singles()
+
+        if next_empty == 1 and missSkr == 1:
+            only_one = False
+            current_cell = grid[row_first][column_first]
+            for i in range(size):
+                if isinstance(current_cell, list) and i+1 in current_cell and all(i+1 < n for n in see_line):
+                    if not only_one:
+                        only_one = True
+                        saved_number = i+1
+                    else:
+                        only_one = False
+                        break
+            if only_one:
+                grid[row_first][column_first] = saved_number
+                if debugPrint:
+                    print(side+" 4.3) Added "+str(saved_number)+" in "+str(row_first)+", "+str(column_first)+"\n")
 
     # When I already have skyline, but still have empty cells in sight
     if next_empty > 0 and condition_met:
@@ -588,7 +606,8 @@ while complete_grid != size**2 and same_grid == False:
 
     complete_grid = clear_lines()
     # print_grid("End loop")
-    # grid[4][1] = 4
+    # grid[4][1] = 5
+    # grid[5][1] = 2
 
 if same_grid:
     print_grid("\x1b[1;33;41m" + " ERROR: infinite loop " + "\x1b[0m")
