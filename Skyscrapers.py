@@ -69,13 +69,19 @@ def print_grid(message = ""):
     print("\n")
     return
 
-# Pritnt columns
+# Print columns
 def print_columns():
     for i in range(size):
         print("\nCOLUMN " + str(1+i) + ": " + str(hor_order[i]) + ", " + str(hor_order_rev[i]))
         for j in range(size):
             print(grid[j+1][i+1])
-    # return
+
+# Highest number in cell
+def highest_in_cell(cell):
+    if isinstance(cell, list):
+        for i in range(size):
+            if isinstance(cell[-1-i], int): 
+                return cell[-1-i]
 
 # Remove number from cell
 def remove(number, cell):
@@ -395,7 +401,7 @@ def side_constraint(side, line):
                 ultimate_check_singles()
                 break
 
-    # ALL number missSkr are visible
+    # ALL empty cells are visible
     if next_empty == all_empty > 0:
         # - When missSkr as many skyscr as empty visible cells 
         # or just miss 1 but some skyscr will be covered
@@ -423,7 +429,7 @@ def side_constraint(side, line):
                 print(side+" 2.3) Removed "+str(2)+" in "+str(row_first + 2*row_mult)+", "+str(column_first + 2*col_mult)+"\n")
             ultimate_check_singles()
 
-    # NOT ALL number missSkr are visible
+    # NOT ALL empty cells are visible
     elif all_empty != next_empty:
         if (missSkr < next_empty and next_empty > 1 and only_small_left) or \
             (missSkr == 1 and next_empty == 0):
@@ -442,8 +448,6 @@ def side_constraint(side, line):
                         if debugPrint:
                             print(side+" 3.1) Removed "+str(k+1)+" in "+str(row_first)+", "+str(column_first)+"\n")
                 ultimate_check_singles()
-
-            
 
             # Remove highest from furthest, not to see one extra number
             for j in range(size):
@@ -471,18 +475,32 @@ def side_constraint(side, line):
                     if size - j in see_line:
                         before_this_number = size-j
     
-        # Remove numbers that could get hidden when we need to see all next empty spaces
+        # Remove numbers that could hide others when we need to see all next empty spaces
         elif missSkr == next_empty and next_empty > 1:
-            if all(remain_line[-1] < n for n in in_line) and diff != 0:
-                for i in range(next_empty):
-                    for j in range(next_empty - i - 1):
-                        cell = grid[row_first + i*row_mult][column_first + i*col_mult]
-                        if isinstance(cell, list) and remain_line[-1-j] in cell:
-                            remove(remain_line[-1-j], grid[row_first + i*row_mult][column_first + i*col_mult])
-                            if debugPrint:
-                                print(side+" 4.1) Removed "+str(remain_line[-1-j])+" in "+str(row_first+i*row_mult)+", "+str(column_first+i*col_mult)+"\n")
-                            ultimate_check_singles()
+            if only_small_left:
+                # Count the numbers that are missing but cannot be placed in next empty cells
+                # This gap is considered when removing numbers
+                cnt_gap = 0
+                for i in range(len(remain_line)):
+                    none_in_line = True
+                    for j in range(next_empty):
+                        if remain_line[-1-i] in grid[row_first + j*row_mult][column_first + j*col_mult]:
+                            none_in_line = False
+                            break
+                        if j+1 == next_empty and none_in_line:
+                            cnt_gap += 1
+                    if not none_in_line:
+                        break
 
+                for i in range(next_empty):
+                    cell = grid[row_first + i*row_mult][column_first + i*col_mult]
+                    for j in range(next_empty - i - 1):
+                        if isinstance(cell, list) and remain_line[-1-j-cnt_gap] in cell:
+                            remove(remain_line[-1-j-cnt_gap], cell)
+                            if debugPrint:
+                                print(side+" 4.1) Removed "+str(remain_line[-1-j-cnt_gap])+" in "+str(row_first+i*row_mult)+", "+str(column_first+i*col_mult)+"\n")
+                            ultimate_check_singles()
+                
             seenSwitch = False
             for i in range(size):
                 # Make sure we are considering the first number we see before removing
@@ -499,6 +517,7 @@ def side_constraint(side, line):
                             print(side+" 4.2) Removed "+str(1)+" in "+str(row_before - (i+1)*row_mult)+", "+str(column_before - (i+1)*col_mult)+"\n")
                         ultimate_check_singles()
 
+        # When missing one skyscr and only one number can be placed in first cell
         if next_empty == 1 and missSkr == 1:
             only_one = False
             current_cell = grid[row_first][column_first]
@@ -606,8 +625,7 @@ while complete_grid != size**2 and same_grid == False:
 
     complete_grid = clear_lines()
     # print_grid("End loop")
-    # grid[4][1] = 5
-    # grid[5][1] = 2
+    grid[4][1] = 5
 
 if same_grid:
     print_grid("\x1b[1;33;41m" + " ERROR: infinite loop " + "\x1b[0m")
@@ -615,4 +633,4 @@ else:
     # Drawing the FINAL grid
     print_grid("\x1b[1;33;44m" + " FINAL GRID " + "\x1b[0m")
 
-print_columns()
+# print_columns()
