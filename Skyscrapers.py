@@ -76,13 +76,6 @@ def print_columns():
         for j in range(size):
             print(grid[j+1][i+1])
 
-# Highest number in cell
-def highest_in_cell(cell):
-    if isinstance(cell, list):
-        for i in range(size):
-            if isinstance(cell[-1-i], int): 
-                return cell[-1-i]
-
 # Remove number from cell
 def remove(number, cell):
     if isinstance(cell, list) and number in cell:
@@ -405,9 +398,7 @@ def side_constraint(side, line):
     if next_empty == all_empty > 0:
         # - When missSkr as many skyscr as empty visible cells 
         # or just miss 1 but some skyscr will be covered
-        if missSkr == next_empty or \
-        (missSkr == 1 and \
-        not only_small_left):
+        if missSkr == next_empty or (missSkr == 1 and not only_small_left):
             remain_idx = 0
             for i in range(size):
                 if isinstance(grid[row_first + i*row_mult][column_first + i*col_mult], list): 
@@ -475,6 +466,36 @@ def side_constraint(side, line):
                     if size - j in see_line:
                         before_this_number = size-j
     
+            # Complete if missing as many numbers as empty visible cells
+            # Check if all empty cells have all potentially visible nuumbers
+            cnt_empty = 0
+            last_idx = 0
+            for i in range(size):
+                cell = grid[row_first + i*row_mult][column_first + i*col_mult]
+                if isinstance(cell, int):
+                    if cell > remain_line[-1]:
+                        break                    
+                if isinstance(cell, list):
+                    cnt_empty += 1
+                    last_idx = i+1
+            # Fill cells if condition is true
+            if cnt_empty == all_empty:
+                count_up = 0
+                for i in range(last_idx):
+                    cell = grid[row_first + i*row_mult][column_first + i*col_mult]
+                    if isinstance(cell, list):
+                        if missSkr == 1:
+                            grid[row_first + i*row_mult][column_first + i*col_mult] = remain_line[-1]
+                            if debugPrint:
+                                print(side+" 3.4) Added "+str(remain_line[-1])+" in "+str(row_first + i*row_mult)+", "+str(column_first + i*col_mult)+"\n")
+                            break
+                        elif missSkr == all_empty:
+                            grid[row_first + i*row_mult][column_first + i*col_mult] = remain_line[count_up]
+                            count_up += 1
+                            if debugPrint:
+                                print(side+" 3.4) Added "+str(remain_line[count_up])+" in "+str(row_first + i*row_mult)+", "+str(column_first + i*col_mult)+"\n")
+
+
         # Remove numbers that could hide others when we need to see all next empty spaces
         elif missSkr == next_empty and next_empty > 1:
             if only_small_left:
@@ -633,4 +654,4 @@ else:
     # Drawing the FINAL grid
     print_grid("\x1b[1;33;44m" + " FINAL GRID " + "\x1b[0m")
 
-# print_columns()
+print_columns()
